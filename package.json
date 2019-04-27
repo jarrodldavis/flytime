@@ -38,6 +38,8 @@
     "rollup-plugin-svelte": "^5.0.1",
     "rollup-plugin-terser": "^4.0.4",
     "sapper": "^0.26.0-alpha.12",
+    "stylelint": "^10.0.1",
+    "stylelint-config-recommended": "^2.2.0",
     "svelte": "^3.0.0"
   }
 }
