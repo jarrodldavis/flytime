@@ -9,7 +9,8 @@
 		"shinnn.stylelint",
 		"esbenp.prettier-vscode",
 		"msjsdiag.debugger-for-chrome",
-		"auchenberg.vscode-browser-preview"
+		"auchenberg.vscode-browser-preview",
+		"mikestead.dotenv"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []

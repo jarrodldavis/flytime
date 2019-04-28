@@ -34,6 +34,7 @@
     "@orlov_vo/prettier-plugin-svelte": "^0.2.0",
     "chokidar": "^2.0.4",
     "cypress": "^3.2.0",
+    "dotenv": "^7.0.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-config-problems": "^2.0.0",
