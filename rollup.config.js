@@ -14,7 +14,7 @@ const legacy = !!process.env.SAPPER_LEGACY_BUILD;
 export default {
 	client: {
 		input: config.client.input(),
-		output: config.client.output(),
+		output: { ...config.client.output(), sourcemap: true },
 		plugins: [
 			replace({
 				'process.browser': true,
@@ -61,7 +61,7 @@ export default {
 
 	server: {
 		input: config.server.input(),
-		output: config.server.output(),
+		output: { ...config.server.output(), sourcemap: true },
 		plugins: [
 			replace({
 				'process.browser': false,

@@ -1,0 +1,60 @@
+diff --git a/node_modules/sapper/dist/chunk-7176b7a5.js b/node_modules/sapper/dist/chunk-7176b7a5.js
+index d7ab82c..715e691 100644
+--- a/node_modules/sapper/dist/chunk-7176b7a5.js
++++ b/node_modules/sapper/dist/chunk-7176b7a5.js
+@@ -146,7 +146,7 @@ class Watcher extends EventEmitter.EventEmitter {
+ 		if (!this.dev_port) this.dev_port = await __chunk_1.find(10000);
+ 
+ 		// Chrome looks for debugging targets on ports 9222 and 9229 by default
+-		if (!this.devtools_port) this.devtools_port = await __chunk_1.find(9222);
++		if (!this.devtools_port) this.devtools_port = await __chunk_1.find(9222, '127.0.0.1');
+ 
+ 		let manifest_data;
+ 
+diff --git a/node_modules/sapper/dist/chunk-8ea8a181.js b/node_modules/sapper/dist/chunk-8ea8a181.js
+index c9744c4..1718296 100644
+--- a/node_modules/sapper/dist/chunk-8ea8a181.js
++++ b/node_modules/sapper/dist/chunk-8ea8a181.js
+@@ -66,34 +66,34 @@ function check_weird(port) {
+     });
+ }
+ 
+-function find(port) {
++function find(port, host) {
+     return weird().then(function (weird$$1) {
+         if (weird$$1) {
+             return new Promise(function (fulfil) {
+-                get_port_weird(port, fulfil);
++                get_port_weird(port, host, fulfil);
+             });
+         }
+         return new Promise(function (fulfil) {
+-            get_port(port, fulfil);
++            get_port(port, host, fulfil);
+         });
+     });
+ }
+-function get_port(port, cb) {
++function get_port(port, host, cb) {
+     var server = net.createServer();
+     server.unref();
+     server.on('error', function () {
+-        get_port(port + 1, cb);
++        get_port(port + 1, host, cb);
+     });
+-    server.listen({ port: port }, function () {
++    server.listen({ port: port, host: host }, function () {
+         server.close(function () {
+             cb(port);
+         });
+     });
+ }
+-function get_port_weird(port, cb) {
++function get_port_weird(port, host, cb) {
+     var client = net.createConnection({ port: port }, function () {
+         client.end();
+-        get_port(port + 1, cb);
++        get_port(port + 1, host, cb);
+     })
+         .on('error', function () {
+         cb(port);

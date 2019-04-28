@@ -1,0 +1,68 @@
+{
+	// disable built-in VS Code formatters
+	"html.format.enable": false,
+	"json.format.enable": false,
+	"javascript.format.enable": false,
+	"typescript.format.enable": false,
+
+	// enable and configure linters
+	"eslint.enable": true,
+	"eslint.packageManager": "npm",
+	"eslint.provideLintTask": true,
+	"stylelint.enable": true,
+	"prettier.requireConfig": true,
+
+	// npm integration
+	"npm.autoDetect": "on",
+	"npm.enableScriptExplorer": true,
+	"npm.packageManager": "npm",
+
+	// configure editor to match code style
+	"editor.formatOnSave": true,
+	"editor.detectIndentation": false,
+	"editor.tabSize": 2,
+	"editor.insertSpaces": false,
+	"editor.rulers": [80],
+	"files.eol": "\n",
+	"javascript.preferences.quoteStyle": "single",
+	"typescript.preferences.quoteStyle": "single",
+
+	// configure Svelte extension to not conflict with linters
+	"svelte.plugin.css.diagnostics.enable": false,
+	"svelte.plugin.css.format.enable": false,
+	"svelte.plugin.html.format.enable": false,
+	"svelte.plugin.svelte.diagnostics.enable": false,
+	"svelte.plugin.typescript.diagnostics.enable": false,
+	"svelte.plugin.typescript.format.enable": false,
+
+	// enable Svelte syntax highlighting
+	"files.associations": {
+		"*.svelte": "svelte"
+	},
+
+	// treat Svelte templates as HTML for emmet completions
+	"emmet.includeLanguages": {
+		"svelte": "html"
+	},
+
+	// allow breakpoints in Svelte templates
+	"debug.allowBreakpointsEverywhere": true,
+
+	// enable ESLint in Svelte templates
+	"eslint.validate": ["javascript", "svelte"],
+
+	// ignore npm- and Sapper-generated directores
+	"files.exclude": {
+		"**/node_modules": true,
+		"**/__sapper__": true
+	},
+	"files.watcherExclude": {
+		"**/node_modules/**": true,
+		"**/__sapper__/**": true
+	},
+
+	// git commit message settings
+	"git.inputValidation": "always",
+	"git.inputValidationLength": 72,
+	"git.inputValidationSubjectLength": 50
+}
