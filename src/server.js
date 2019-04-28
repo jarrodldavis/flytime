@@ -3,22 +3,23 @@ import compression from 'compression';
 import { App, ExpressReceiver } from '@slack/bolt';
 import * as sapper from '@sapper/server';
 
-const { PORT, NODE_ENV, SLACK_SIGNING_SECRET } = process.env;
+import { add_slack_events } from './slack';
+
+const { PORT, NODE_ENV, SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN } = process.env;
 const dev = NODE_ENV === 'development';
 
 const receiver = new ExpressReceiver({ signingSecret: SLACK_SIGNING_SECRET });
+
+// TODO: multi-team authorization
+const app = new App({ receiver, token: SLACK_BOT_TOKEN });
+add_slack_events(app);
+
 receiver.app.use(
 	compression({ threshold: 0 }),
 	sirv('static', { dev }),
+	req => (req.slack_client = app.client),
 	sapper.middleware()
 );
-
-async function authorize() {
-	// TODO
-	return Promise.reject(new Error('Authorization is not implemented'));
-}
-
-const app = new App({ receiver, authorize });
 
 // eslint-disable-next-line no-console
 app.start(PORT).catch(error => console.log('error', error));
