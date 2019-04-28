@@ -1,0 +1,9 @@
+__sapper__
+node_modules
+src/node_modules
+package.json
+package-lock.json
+.npmrc
+*.png
+*.*ignore
+*.patch
