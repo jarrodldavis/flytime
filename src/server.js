@@ -13,5 +13,8 @@ polka() // You can also use Express
 		sapper.middleware()
 	)
 	.listen(PORT, err => {
-		if (err) console.log('error', err);
+		if (err) {
+			// eslint-disable-next-line no-console
+			console.log('error', err);
+		}
 	});

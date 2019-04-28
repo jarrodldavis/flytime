@@ -1,21 +1,21 @@
 module.exports = {
-	'root': true,
-	'env': {
-		'es6': true,
+	root: true,
+	env: {
+		es6: true
 	},
-	'extends': ['eslint:recommended', 'problems/node10', 'prettier'],
-	'globals': {
-		'process': 'readonly',
+	extends: ['eslint:recommended', 'problems/node10', 'prettier'],
+	globals: {
+		process: 'readonly'
 	},
-	'parserOptions': {
-		'ecmaVersion': 2018,
-		'sourceType': 'module'
+	parserOptions: {
+		ecmaVersion: 2018,
+		sourceType: 'module'
 	},
-	'overrides': [
+	overrides: [
 		{
-			'files': ['rollup.config.js'],
-			'env': {
-				'node': true
+			files: ['rollup.config.js'],
+			env: {
+				node: true
 			}
 		}
 	]

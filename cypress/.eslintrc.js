@@ -1,13 +1,13 @@
 module.exports = {
-	'root': false,
-	'plugins': ['cypress', 'mocha'],
-	'env': {
-		'node': true,
-		'mocha': true,
+	root: false,
+	plugins: ['cypress', 'mocha'],
+	env: {
+		node: true,
+		mocha: true,
 		'cypress/globals': true
 	},
-	'extends': ['plugin:cypress/recommended'],
-	'rules': {
+	extends: ['plugin:cypress/recommended'],
+	rules: {
 		'func-names': 'off',
 		'mocha/no-exclusive-tests': 'error',
 		'mocha/no-pending-tests': 'error',

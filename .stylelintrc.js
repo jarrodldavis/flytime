@@ -1,6 +1,9 @@
 module.exports = {
-	'extends': ['stylelint-config-recommended', 'stylelint-config-prettier'],
-	'rules': {
-		'selector-pseudo-class-no-unknown': [true, {'ignorePseudoClasses': ['global']}]
+	extends: ['stylelint-config-recommended', 'stylelint-config-prettier'],
+	rules: {
+		'selector-pseudo-class-no-unknown': [
+			true,
+			{ ignorePseudoClasses: ['global'] }
+		]
 	}
 };
