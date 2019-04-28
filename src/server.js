@@ -14,10 +14,15 @@ const receiver = new ExpressReceiver({ signingSecret: SLACK_SIGNING_SECRET });
 const app = new App({ receiver, token: SLACK_BOT_TOKEN });
 add_slack_events(app);
 
+function provide_slack_client(req, _res, next) {
+	req.slack_client = app.client;
+	next();
+}
+
 receiver.app.use(
 	compression({ threshold: 0 }),
 	sirv('static', { dev }),
-	req => (req.slack_client = app.client),
+	provide_slack_client,
 	sapper.middleware()
 );
 
