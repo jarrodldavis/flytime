@@ -14,15 +14,16 @@
     "start": "node __sapper__/build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "test": "run-p --race dev cy:run"
+    "test": "run-p --race dev cy:run",
+    "test:dotenv": "dotenv npm test"
   },
   "engines": {
     "node": "^11.14.0",
     "npm": "^6.9.0"
   },
   "dependencies": {
+    "@slack/bolt": "^1.0.1",
     "compression": "^1.7.1",
-    "polka": "^0.5.0",
     "sirv": "^0.4.0"
   },
   "devDependencies": {
@@ -34,6 +35,8 @@
     "@orlov_vo/prettier-plugin-svelte": "^0.2.0",
     "chokidar": "^2.0.4",
     "cypress": "^3.2.0",
+    "dotenv": "^7.0.0",
+    "dotenv-cli": "^2.0.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-config-problems": "^2.0.0",

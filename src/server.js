@@ -1,20 +1,30 @@
 import sirv from 'sirv';
-import polka from 'polka';
 import compression from 'compression';
+import { App, ExpressReceiver } from '@slack/bolt';
 import * as sapper from '@sapper/server';
 
-const { PORT, NODE_ENV } = process.env;
+import { add_slack_events } from './slack';
+
+const { PORT, NODE_ENV, SLACK_SIGNING_SECRET, SLACK_BOT_TOKEN } = process.env;
 const dev = NODE_ENV === 'development';
 
-polka() // You can also use Express
-	.use(
-		compression({ threshold: 0 }),
-		sirv('static', { dev }),
-		sapper.middleware()
-	)
-	.listen(PORT, err => {
-		if (err) {
-			// eslint-disable-next-line no-console
-			console.log('error', err);
-		}
-	});
+const receiver = new ExpressReceiver({ signingSecret: SLACK_SIGNING_SECRET });
+
+// TODO: multi-team authorization
+const app = new App({ receiver, token: SLACK_BOT_TOKEN });
+add_slack_events(app);
+
+function provide_slack_client(req, _res, next) {
+	req.slack_client = app.client;
+	next();
+}
+
+receiver.app.use(
+	compression({ threshold: 0 }),
+	sirv('static', { dev }),
+	provide_slack_client,
+	sapper.middleware()
+);
+
+// eslint-disable-next-line no-console
+app.start(PORT).catch(error => console.log('error', error));
