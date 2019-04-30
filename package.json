@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "patch-package",
     "dev": "sapper dev",
+    "wait": "wait-on http://localhost:3000",
     "build": "sapper build --legacy",
     "lint": "run-s lint:* -cns",
     "lint:es": "eslint . --ext js,svelte",
@@ -57,6 +58,7 @@
     "stylelint": "^10.0.1",
     "stylelint-config-prettier": "^5.1.0",
     "stylelint-config-recommended": "^2.2.0",
-    "svelte": "^3.0.0"
+    "svelte": "^3.0.0",
+    "wait-on": "^3.2.0"
   }
 }
