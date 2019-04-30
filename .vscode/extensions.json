@@ -8,6 +8,7 @@
 		"dbaeumer.vscode-eslint",
 		"shinnn.stylelint",
 		"esbenp.prettier-vscode",
+		"EditorConfig.EditorConfig",
 		"msjsdiag.debugger-for-chrome",
 		"auchenberg.vscode-browser-preview",
 		"mikestead.dotenv"

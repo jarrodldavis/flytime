@@ -22,6 +22,12 @@ module.exports = {
 			env: {
 				serviceworker: true
 			}
+		},
+		{
+			files: ['**/*.svelte'],
+			rules: {
+				'no-labels': 'off'
+			}
 		}
 	]
 };

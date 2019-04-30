@@ -21,7 +21,8 @@
 			"request": "launch",
 			"name": "client",
 			"webRoot": "${workspaceFolder}/__sapper__/dev/client",
-			"url": "http://localhost:3000"
+			"url": "http://localhost:3000",
+			"preLaunchTask": "npm: wait"
 		}
 	],
 	"compounds": [
