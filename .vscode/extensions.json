@@ -10,6 +10,7 @@
 		"esbenp.prettier-vscode",
 		"EditorConfig.EditorConfig",
 		"msjsdiag.debugger-for-chrome",
+		"hbenl.vscode-firefox-debug",
 		"auchenberg.vscode-browser-preview",
 		"mikestead.dotenv"
 	],

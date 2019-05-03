@@ -19,16 +19,56 @@
 		{
 			"type": "browser-preview",
 			"request": "launch",
-			"name": "client",
+			"name": "client:browser-preview",
 			"webRoot": "${workspaceFolder}/__sapper__/dev/client",
 			"url": "http://localhost:3000",
 			"preLaunchTask": "npm: wait"
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "client:chrome",
+			"webRoot": "${workspaceFolder}/__sapper__/dev/client",
+			"url": "http://localhost:3000",
+			"port": 9223,
+			"preLaunchTask": "npm: wait"
+		},
+		{
+			"type": "firefox",
+			"request": "launch",
+			"name": "client:firefox",
+			"webRoot": "${workspaceFolder}/__sapper__/dev",
+			"url": "http://localhost:3000",
+			"preLaunchTask": "npm: wait",
+			"sourceMaps": "client",
+			"pathMappings": [
+				{
+					"url": "http://localhost:3000/src/",
+					"path": "${workspaceFolder}/src/"
+				},
+				{
+					"url": "http://localhost:3000/node_modules/",
+					"path": "${workspaceFolder}/node_modules/"
+				}
+			]
 		}
 	],
 	"compounds": [
 		{
-			"name": "dev",
-			"configurations": ["server", "client"]
+			"name": "dev:browser-preview",
+			"configurations": ["server", "client:browser-preview"]
+		},
+		{
+			"name": "dev:chrome",
+			"configurations": ["server", "client:chrome"]
+		},
+		{
+			"name": "dev:firefox",
+			"configurations": ["server", "client:firefox"]
+		},
+		{
+			"name": "dev:chrome+firefox",
+			"configurations": ["server", "client:chrome", "client:firefox"]
 		}
 	]
 }
