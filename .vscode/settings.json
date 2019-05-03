@@ -11,6 +11,9 @@
 	"eslint.provideLintTask": true,
 	"stylelint.enable": true,
 	"prettier.requireConfig": true,
+	"[svelte]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
 
 	// npm integration
 	"npm.autoDetect": "on",

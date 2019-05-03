@@ -1,5 +1,5 @@
 diff --git a/node_modules/@orlov_vo/prettier-plugin-svelte/plugin.js b/node_modules/@orlov_vo/prettier-plugin-svelte/plugin.js
-index aee7d7d..a386fba 100644
+index aee7d7d..f3e6260 100644
 --- a/node_modules/@orlov_vo/prettier-plugin-svelte/plugin.js
 +++ b/node_modules/@orlov_vo/prettier-plugin-svelte/plugin.js
 @@ -89,35 +89,24 @@ function print(path, options, print) {
@@ -71,3 +71,12 @@ index aee7d7d..a386fba 100644
          case 'MustacheTag':
              return concat(['{', printJS(path, print, 'expression'), '}']);
          case 'IfBlock': {
+@@ -511,7 +515,7 @@ const languages = [
+         name: 'svelte',
+         parsers: ['svelte'],
+         extensions: ['.svelte', '.html'],
+-        vscodeLanguageIds: ['html'],
++        vscodeLanguageIds: ['html', 'svelte'],
+     },
+ ];
+ const parsers = {
