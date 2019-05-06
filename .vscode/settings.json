@@ -12,7 +12,7 @@
 	"stylelint.enable": true,
 	"prettier.requireConfig": true,
 	"[svelte]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
+		"editor.defaultFormatter": "JamesBirtles.svelte-vscode"
 	},
 
 	// npm integration
@@ -29,24 +29,6 @@
 	"files.eol": "\n",
 	"javascript.preferences.quoteStyle": "single",
 	"typescript.preferences.quoteStyle": "single",
-
-	// configure Svelte extension to not conflict with linters
-	"svelte.plugin.css.diagnostics.enable": false,
-	"svelte.plugin.css.format.enable": false,
-	"svelte.plugin.html.format.enable": false,
-	"svelte.plugin.svelte.diagnostics.enable": false,
-	"svelte.plugin.typescript.diagnostics.enable": false,
-	"svelte.plugin.typescript.format.enable": false,
-
-	// enable Svelte syntax highlighting
-	"files.associations": {
-		"*.svelte": "svelte"
-	},
-
-	// treat Svelte templates as HTML for emmet completions
-	"emmet.includeLanguages": {
-		"svelte": "html"
-	},
 
 	// allow breakpoints in Svelte templates
 	"debug.allowBreakpointsEverywhere": true,

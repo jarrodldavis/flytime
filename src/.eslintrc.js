@@ -4,6 +4,9 @@ module.exports = {
 	env: {
 		'shared-node-browser': true
 	},
+	settings: {
+		'svelte3/lint-template': true
+	},
 	overrides: [
 		{
 			files: ['client.js'],
