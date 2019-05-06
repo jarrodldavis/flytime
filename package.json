@@ -5,6 +5,7 @@
   "scripts": {
     "prepare": "patch-package",
     "dev": "sapper dev",
+    "dev:test": "npm run dev --node-options='--require dotenv/config'",
     "wait": "wait-on http://localhost:3000",
     "build": "sapper build --legacy",
     "lint": "run-s lint:* -cns",
@@ -15,8 +16,7 @@
     "start": "node __sapper__/build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "test": "run-p --race dev cy:run",
-    "test:dotenv": "dotenv npm test"
+    "test": "run-p --race dev:test cy:run"
   },
   "engines": {
     "node": "^11.14.0",
@@ -37,7 +37,6 @@
     "chokidar": "^3.0.0",
     "cypress": "^3.2.0",
     "dotenv": "^8.0.0",
-    "dotenv-cli": "^2.0.0",
     "eslint": "^5.16.0",
     "eslint-config-prettier": "^4.2.0",
     "eslint-config-problems": "^2.0.0",
