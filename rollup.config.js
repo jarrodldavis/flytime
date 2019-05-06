@@ -10,11 +10,13 @@ import pkg from './package.json';
 const mode = process.env.NODE_ENV;
 const dev = mode === 'development';
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+const resolve_extensions = ['.mjs', '.js', '.json', '.node', '.svelte'];
 
 export default {
 	client: {
 		input: config.client.input(),
 		output: { ...config.client.output(), sourcemap: true },
+		watch: { chokidar: true },
 		plugins: [
 			replace({
 				'process.browser': true,
@@ -25,7 +27,7 @@ export default {
 				hydratable: true,
 				emitCss: true
 			}),
-			resolve(),
+			resolve({ extensions: resolve_extensions }),
 			commonjs(),
 
 			legacy &&
@@ -62,6 +64,7 @@ export default {
 	server: {
 		input: config.server.input(),
 		output: { ...config.server.output(), sourcemap: true },
+		watch: { chokidar: true },
 		plugins: [
 			replace({
 				'process.browser': false,
@@ -71,7 +74,7 @@ export default {
 				generate: 'ssr',
 				dev
 			}),
-			resolve(),
+			resolve({ extensions: resolve_extensions }),
 			commonjs()
 		],
 		external: Object.keys(pkg.dependencies).concat(
@@ -83,8 +86,9 @@ export default {
 	serviceworker: {
 		input: config.serviceworker.input(),
 		output: config.serviceworker.output(),
+		watch: { chokidar: true },
 		plugins: [
-			resolve(),
+			resolve({ extensions: resolve_extensions }),
 			replace({
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode)
