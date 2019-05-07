@@ -29,7 +29,7 @@ const base_session_middleware = session({
 	proxy: NODE_ENV === 'production'
 });
 
-function session_middleware(req, res, next) {
+export function session_middleware(req, res, next) {
 	let attempts_left = MAX_SESSION_ATTEMPTS;
 
 	function try_get_session(error) {
@@ -53,13 +53,9 @@ function session_middleware(req, res, next) {
 	try_get_session();
 }
 
-export const authentication_middleware = [session_middleware];
-
-export function get_client_session_data(req) {
-	if (!req.session || !req.session.active) {
-		return { active: false };
-	}
-
-	const { data } = req.session;
-	return { active: true, data };
+export function get_client_session_data(req, res) {
+	const { user, team } = req.session;
+	const { error } = res.locals;
+	// clone error into plain object
+	return { error: error && { ...error }, user, team };
 }
