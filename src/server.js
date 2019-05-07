@@ -4,7 +4,11 @@ import compression from 'compression';
 import * as sapper from '@sapper/server';
 
 import { slack_middleware, slack_client } from './slack';
-import { auth_middleware, get_client_session_data } from './auth';
+import {
+	session_middleware,
+	validate_oauth_scopes,
+	get_client_session_data
+} from './session';
 
 const { PORT, NODE_ENV } = process.env;
 const dev = NODE_ENV === 'development';
@@ -20,7 +24,8 @@ express()
 		compression({ threshold: 0 }),
 		sirv('static', { dev }),
 		provide_slack_client,
-		auth_middleware,
+		session_middleware,
+		validate_oauth_scopes,
 		sapper.middleware({ session: get_client_session_data })
 	)
 	.listen(PORT);

@@ -15,7 +15,7 @@ module.exports = {
 			}
 		},
 		{
-			files: ['server.js', 'server-authentication.js'],
+			files: ['server.js', 'session.js'],
 			env: {
 				node: true
 			}

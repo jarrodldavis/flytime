@@ -1,3 +1,16 @@
+<script context="module">
+	export function preload(page, session) {
+		if (page.error) {
+			return;
+		}
+
+		const error = session.error;
+		if (error) {
+			this.error(error.status || 500, error.message);
+		}
+	}
+</script>
+
 <script>
 	import Nav from '../components/Nav';
 
