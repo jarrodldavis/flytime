@@ -1,4 +1,6 @@
 <script>
+	import UserNavItem from './UserNavItem';
+
 	export let segment;
 </script>
 
@@ -14,10 +16,19 @@
 		padding: 0;
 		display: flex;
 		flex-direction: row;
+		flex-wrap: wrap-reverse;
 	}
 
 	li {
 		display: block;
+	}
+
+	.user {
+		display: flex;
+		flex-direction: row;
+		flex-grow: 1;
+		justify-content: flex-end;
+		align-items: center;
 	}
 
 	.selected {
@@ -60,6 +71,10 @@
 				href="blog">
 				blog
 			</a>
+		</li>
+
+		<li class="user">
+			<UserNavItem />
 		</li>
 	</ul>
 </nav>
