@@ -1,4 +1,5 @@
 import uid from 'uid-safe';
+import { AuthorizationError } from '../../common';
 
 const { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID } = process.env;
 const OAUTH_STATE_SIZE = parseInt(process.env.OAUTH_STATE_SIZE, 10);
@@ -11,7 +12,8 @@ export function oauth_start(scopes) {
 	const scope = scopes.join(',');
 
 	return async function(req, res, next) {
-		if (res.locals.error) {
+		// ignore scope validation since the user is going through OAuth flow again
+		if (res.locals.error && !(res.locals.error instanceof AuthorizationError)) {
 			// fallback to Sapper error page
 			return next();
 		}
