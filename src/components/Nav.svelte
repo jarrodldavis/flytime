@@ -12,18 +12,12 @@
 	ul {
 		margin: 0;
 		padding: 0;
-	}
-
-	/* clearfix */
-	ul::after {
-		content: '';
-		display: block;
-		clear: both;
+		display: flex;
+		flex-direction: row;
 	}
 
 	li {
 		display: block;
-		float: left;
 	}
 
 	.selected {
