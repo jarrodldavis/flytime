@@ -20,7 +20,10 @@
 	}
 
 	li {
-		display: block;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		padding: 1em;
 	}
 
 	.user {
@@ -29,17 +32,17 @@
 		flex-grow: 1;
 		justify-content: flex-end;
 		align-items: center;
+		padding: 0.5em 1em;
 	}
 
 	.selected {
 		position: relative;
-		display: inline-block;
 	}
 
 	.selected::after {
 		position: absolute;
 		content: '';
-		width: calc(100% - 1em);
+		width: calc(100% - 2em);
 		height: 2px;
 		background-color: rgb(170, 30, 30);
 		display: block;
@@ -48,29 +51,22 @@
 
 	a {
 		text-decoration: none;
-		padding: 1em 0.5em;
-		display: block;
 	}
 </style>
 
 <nav>
 	<ul>
-		<li>
-			<a class={segment === undefined ? 'selected' : ''} href=".">home</a>
+		<li class={segment === undefined ? 'selected' : ''}>
+			<a href=".">home</a>
 		</li>
-		<li>
-			<a class={segment === 'about' ? 'selected' : ''} href="about">about</a>
+		<li class={segment === 'about' ? 'selected' : ''}>
+			<a href="about">about</a>
 		</li>
 
 		<!-- for the blog link, we're using rel=prefetch so that Sapper prefetches
 		     the blog data when we hover over the link or tap it on a touchscreen -->
-		<li>
-			<a
-				rel="prefetch"
-				class={segment === 'blog' ? 'selected' : ''}
-				href="blog">
-				blog
-			</a>
+		<li class={segment === 'blog' ? 'selected' : ''}>
+			<a rel="prefetch" href="blog">blog</a>
 		</li>
 
 		<li class="user">

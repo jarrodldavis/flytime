@@ -11,6 +11,9 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
+		margin: 0;
+		/* same height as Slack buttons */
+		height: 40px;
 	}
 
 	img {
