@@ -40,6 +40,9 @@ self.addEventListener('fetch', event => {
 	// don't try to handle e.g. data: URIs
 	if (!url.protocol.startsWith('http')) return;
 
+	// ignore sign-in, sign-out, and app install
+	if (url.pathname.startsWith('/auth')) return;
+
 	// ignore dev server requests
 	if (
 		url.hostname === self.location.hostname &&

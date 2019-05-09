@@ -19,6 +19,7 @@ function provide_slack_client(req, _res, next) {
 }
 
 express()
+	.set('trust proxy', true)
 	.use(
 		slack_middleware,
 		compression({ threshold: 0 }),
