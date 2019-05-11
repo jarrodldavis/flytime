@@ -12,7 +12,7 @@
 </script>
 
 <script>
-	import Nav from '../components/Nav';
+	import Nav from '../components/navigation';
 
 	export let segment;
 </script>

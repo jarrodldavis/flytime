@@ -1,6 +1,6 @@
 <script>
 	import { stores } from '@sapper/app';
-	import SlackButton from './SlackButton';
+	import SlackButton from '../SlackButton';
 	import UserInfo from './UserInfo';
 	import TeamInfo from './TeamInfo';
 
