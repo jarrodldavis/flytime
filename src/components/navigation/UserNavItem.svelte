@@ -3,6 +3,7 @@
 	import SlackButton from '../SlackButton';
 	import UserInfo from './UserInfo';
 	import TeamInfo from './TeamInfo';
+	import SignOutButton from './SignOutButton';
 
 	const { session } = stores();
 	$: ({ user, team } = $session);
@@ -30,6 +31,8 @@
 		<UserInfo {user} />
 		<span class="spacer" />
 		<TeamInfo {team} />
+		<span class="spacer" />
+		<SignOutButton />
 	</p>
 {:else}
 	<SlackButton />
