@@ -2,7 +2,7 @@ import session, { Session } from 'express-session';
 import redis_store from 'connect-redis';
 import { promisify } from 'util';
 
-import { ApplicationError } from './common';
+import { ApplicationError, SESSION_RETRIEVAL_FAILURE } from './common';
 
 Session.prototype.regenerate = promisify(Session.prototype.regenerate);
 Session.prototype.destroy = promisify(Session.prototype.destroy);
@@ -36,7 +36,8 @@ export function session_middleware(req, res, next) {
 
 	function try_get_session(error) {
 		if (error) {
-			res.locals.error = error;
+			error.code = error.code || SESSION_RETRIEVAL_FAILURE;
+			res.locals.error = new ApplicationError(error);
 			return next();
 		}
 
@@ -48,7 +49,7 @@ export function session_middleware(req, res, next) {
 
 		if (attempts_left === 0) {
 			req.session = null;
-			res.locals.error = new ApplicationError('session_retrieval_failure');
+			res.locals.error = new ApplicationError(SESSION_RETRIEVAL_FAILURE);
 			return next();
 		}
 
@@ -60,7 +61,13 @@ export function session_middleware(req, res, next) {
 
 export function get_client_session_data(req, res) {
 	const { user, team } = req.session || {};
-	const { error } = res.locals;
-	// clone error into plain object
-	return { error: error && { ...error }, user, team };
+
+	let { error } = res.locals;
+	if (error) {
+		// clone error into plain object and filter unneeded properties
+		const { message, code, status } = error;
+		error = { message, code, status };
+	}
+
+	return { error, user, team };
 }

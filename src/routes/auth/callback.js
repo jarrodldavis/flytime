@@ -1,6 +1,21 @@
-import { AuthenticationError } from '../../common';
+import {
+	ApplicationError,
+	OAUTH_MISSING_SLACK_STATE,
+	OAUTH_MISSING_SESSION_STATE,
+	OAUTH_STATE_MISMATCH,
+	OAUTH_MISSING_CODE,
+	OAUTH_MISSING_ACCESS_TOKEN,
+	OAUTH_MISSING_SCOPE,
+	OAUTH_MISSING_USER_ID
+} from '../../common';
 
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
+
+class AuthenticationError extends ApplicationError {
+	constructor(code, message = 'Authentication Failed') {
+		super(code, message, 401);
+	}
+}
 
 export async function get(req, res, next) {
 	if (res.locals.error) {
@@ -11,15 +26,15 @@ export async function get(req, res, next) {
 	delete res.locals.error;
 
 	if (!req.query.state) {
-		res.locals.error = new AuthenticationError('oauth_missing_slack_state');
+		res.locals.error = new AuthenticationError(OAUTH_MISSING_SLACK_STATE);
 	} else if (!req.session.state) {
-		res.locals.error = new AuthenticationError('oauth_missing_session_state');
+		res.locals.error = new AuthenticationError(OAUTH_MISSING_SESSION_STATE);
 	} else if (req.query.state !== req.session.state) {
-		res.locals.error = new AuthenticationError('oauth_state_mismatch');
+		res.locals.error = new AuthenticationError(OAUTH_STATE_MISMATCH);
 	} else if (req.query.error) {
 		res.locals.error = new AuthenticationError(`oauth_${req.query.error}`);
 	} else if (!req.query.code) {
-		res.locals.error = new AuthenticationError('oauth_missing_code');
+		res.locals.error = new AuthenticationError(OAUTH_MISSING_CODE);
 	}
 
 	delete req.session.state;
@@ -38,7 +53,7 @@ export async function get(req, res, next) {
 			redirect_uri: `${req.protocol}://${req.host}${req.path}`
 		});
 	} catch (error) {
-		res.locals.error = error;
+		res.locals.error = new ApplicationError(error);
 		// fallback to Sapper error page
 		return next();
 	}
@@ -48,7 +63,7 @@ export async function get(req, res, next) {
 	if (access_token) {
 		req.session.token = access_token;
 	} else {
-		res.locals.error = new AuthenticationError('oauth_missing_access_token');
+		res.locals.error = new ApplicationError(OAUTH_MISSING_ACCESS_TOKEN);
 		// fallback to Sapper error page
 		return next();
 	}
@@ -56,13 +71,13 @@ export async function get(req, res, next) {
 	if (scope) {
 		req.session.scopes = scope.split(',');
 	} else {
-		res.locals.error = new AuthenticationError('oauth_missing_scope');
+		res.locals.error = new ApplicationError(OAUTH_MISSING_SCOPE);
 		// fallback to Sapper error page
 		return next();
 	}
 
 	if (!user_id) {
-		res.locals.error = new AuthenticationError('oauth_missing_user_id');
+		res.locals.error = new ApplicationError(OAUTH_MISSING_USER_ID);
 		// fallback to Sapper error page
 		return next();
 	}
@@ -75,8 +90,7 @@ export async function get(req, res, next) {
 		req.session.user = user;
 		req.session.team = team;
 	} catch (error) {
-		res.locals.error = new AuthenticationError(error.code);
-		res.locals.error.stack = error.stack;
+		res.locals.error = new ApplicationError(error);
 		return next();
 	}
 

@@ -1,5 +1,5 @@
 import uid from 'uid-safe';
-import { ApplicationError } from '../../common';
+import { OAUTH_STATE_GENERATION_FAILURE, ApplicationError } from '../../common';
 
 const { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID } = process.env;
 const OAUTH_STATE_SIZE = parseInt(process.env.OAUTH_STATE_SIZE, 10);
@@ -23,8 +23,8 @@ export async function get(req, res, next) {
 	try {
 		state = await uid(OAUTH_STATE_SIZE);
 	} catch (error) {
-		res.locals.error = new ApplicationError('oauth_state_generation_failure');
-		res.locals.error.stack = error.stack;
+		error.code = OAUTH_STATE_GENERATION_FAILURE;
+		res.locals.error = new ApplicationError(error);
 		// fallback to Sapper error page
 		return next();
 	}
