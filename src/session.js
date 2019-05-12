@@ -3,6 +3,7 @@ import redis_store from 'connect-redis';
 import { promisify } from 'util';
 
 import { ApplicationError, SESSION_RETRIEVAL_FAILURE } from './common';
+import { redis_client } from './redis';
 
 Session.prototype.regenerate = promisify(Session.prototype.regenerate);
 Session.prototype.destroy = promisify(Session.prototype.destroy);
@@ -10,7 +11,6 @@ Session.prototype.reload = promisify(Session.prototype.reload);
 Session.prototype.save = promisify(Session.prototype.save);
 
 const {
-	REDIS_URL,
 	SESSION_SECRET,
 	MAX_SESSION_ATTEMPTS,
 	COOKIE_NAME,
@@ -20,7 +20,7 @@ const {
 const RedisStore = redis_store(session);
 
 const base_session_middleware = session({
-	store: new RedisStore({ url: REDIS_URL, unref: true }),
+	store: new RedisStore({ client: redis_client }),
 	secret: SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,

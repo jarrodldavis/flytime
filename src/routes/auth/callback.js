@@ -1,15 +1,22 @@
+import { promisify } from 'util';
+
 import {
 	ApplicationError,
 	OAUTH_MISSING_SLACK_STATE,
 	OAUTH_MISSING_SESSION_STATE,
 	OAUTH_STATE_MISMATCH,
 	OAUTH_MISSING_CODE,
+	OAUTH_BOT_TOKEN_SAVE_FAILURE,
 	OAUTH_MISSING_ACCESS_TOKEN,
 	OAUTH_MISSING_SCOPE,
 	OAUTH_MISSING_USER_ID
 } from '../../common';
 
+import { redis_client } from '../../redis';
+
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
+
+const redis_set = promisify(redis_client.set).bind(redis_client);
 
 class AuthenticationError extends ApplicationError {
 	constructor(code, message = 'Authentication Failed') {
@@ -58,7 +65,21 @@ export async function get(req, res, next) {
 		return next();
 	}
 
-	const { access_token, scope, user_id } = result;
+	const { access_token, scope, user_id, team_id } = result;
+	try {
+		const { bot_user_id, bot_access_token } = result.bot;
+		const bot = { token: bot_access_token, user: bot_user_id };
+
+		const bot_user = await req.slack_client.users.info(bot);
+		bot.id = bot_user.user.profile.bot_id;
+
+		await redis_set(`bot:${team_id}`, JSON.stringify(bot));
+	} catch (error) {
+		error.code = error.code || OAUTH_BOT_TOKEN_SAVE_FAILURE;
+		res.locals.error = new ApplicationError(error);
+		// fallback to Sapper error page
+		return next();
+	}
 
 	if (access_token) {
 		req.session.token = access_token;
