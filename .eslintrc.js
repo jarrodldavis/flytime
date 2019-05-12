@@ -13,7 +13,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['rollup.config.js'],
+			files: ['rollup.config.js', 'mock-redis.js'],
 			env: {
 				node: true
 			}

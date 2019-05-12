@@ -59,3 +59,17 @@ index f013ea7..7e0ba0e 100644
  
  		let manifest_data;
  
+diff --git a/node_modules/sapper/runtime/server.mjs b/node_modules/sapper/runtime/server.mjs
+index 61de2f6..ffa590e 100644
+--- a/node_modules/sapper/runtime/server.mjs
++++ b/node_modules/sapper/runtime/server.mjs
+@@ -2239,7 +2239,8 @@ function get_page_handler(
+ 				? manifest.root_preload.call(preload_context, {
+ 					path: req.path,
+ 					query: req.query,
+-					params: {}
++					params: {},
++					error
+ 				}, session)
+ 				: {};
+ 

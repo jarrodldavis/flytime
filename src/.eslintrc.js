@@ -15,7 +15,7 @@ module.exports = {
 			}
 		},
 		{
-			files: ['server.js'],
+			files: ['server.js', 'session.js', 'redis.js'],
 			env: {
 				node: true
 			}
