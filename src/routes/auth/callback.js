@@ -2,6 +2,7 @@ import { promisify } from 'util';
 
 import {
 	ApplicationError,
+	AuthenticationError,
 	OAUTH_MISSING_SLACK_STATE,
 	OAUTH_MISSING_SESSION_STATE,
 	OAUTH_STATE_MISMATCH,
@@ -17,12 +18,6 @@ import { redis_client } from '../../redis';
 const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
 
 const redis_set = promisify(redis_client.set).bind(redis_client);
-
-class AuthenticationError extends ApplicationError {
-	constructor(code, message = 'Authentication Failed') {
-		super(code, message, 401);
-	}
-}
 
 export async function get(req, res, next) {
 	if (res.locals.error) {
