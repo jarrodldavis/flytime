@@ -38,7 +38,7 @@ const server = express()
 	)
 	.listen(PORT, error => {
 		if (error) {
-			logger.fatal(error, 'Error starting HTTP server');
+			logger.fatal({ error }, 'Error starting HTTP server');
 		} else {
 			logger.info(`HTTP server started and listening on port ${PORT}`);
 		}
@@ -63,7 +63,7 @@ async function graceful_shutdown(logger, signal) {
 		await close_server();
 		logger.info('Successfully closed HTTP server');
 	} catch (error) {
-		logger.error(error, 'Failed to close HTTP server');
+		logger.error({ error }, 'Failed to close HTTP server');
 	}
 
 	logger.info('Quitting Redis connection...');
@@ -71,7 +71,7 @@ async function graceful_shutdown(logger, signal) {
 		await quit_redis();
 		logger.info('Successfully quit Redis connection');
 	} catch (error) {
-		logger.error(error, 'Failed to quit Redis connection');
+		logger.error({ error }, 'Failed to quit Redis connection');
 	}
 
 	logger.info('Completed shutdown successfully');

@@ -2,13 +2,16 @@ import pino from 'pino';
 
 import { is_development } from './common';
 
+// logger
 export const logger = pino({
-	prettyPrint: is_development,
+	prettyPrint: is_development && { translateTime: true },
+	serializers: { err: pino.stdSerializers.err, error: pino.stdSerializers.err },
 	redact: ['req.headers.cookie', 'res.headers["set-cookie"]']
 });
 
 export const GRACEFUL_SHUTDOWN = Symbol('graceful shutdown');
 
+// lifecycle management
 const signal_handler = pino.final(logger, (signal, logger) => {
 	process.emit(GRACEFUL_SHUTDOWN, logger, signal);
 });
@@ -19,7 +22,7 @@ process.on('SIGINT', signal_handler);
 const unhandled_handler = pino.final(logger, (error, logger) => {
 	// It's only safe to do sync cleanup in unhandled error handlers
 	// Since all graceful shutdown logic is async, just terminate
-	logger.fatal(error, 'Immediately terminating due to unhandled error');
+	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
 	process.exitCode = 1;
 });
 
@@ -33,6 +36,7 @@ process.on(
 	})
 );
 
+// environment variables
 function get(target, prop, receiver) {
 	const value = Reflect.get(target, prop, receiver);
 
