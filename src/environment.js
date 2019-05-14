@@ -2,7 +2,10 @@ import pino from 'pino';
 
 import { is_development } from './common';
 
-export const logger = pino({ prettyPrint: is_development });
+export const logger = pino({
+	prettyPrint: is_development,
+	redact: ['req.headers.cookie', 'res.headers["set-cookie"]']
+});
 
 export const GRACEFUL_SHUTDOWN = Symbol('graceful shutdown');
 
