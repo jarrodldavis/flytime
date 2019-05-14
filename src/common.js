@@ -1,3 +1,8 @@
+// environment
+const { NODE_ENV } = process.env;
+export const is_production = NODE_ENV === 'production';
+export const is_development = NODE_ENV === 'development';
+
 // application errors
 export const SESSION_RETRIEVAL_FAILURE = 'session_retrieval_failure';
 export const SESSION_DESTROY_FAILURE = 'session_destroy_failure';

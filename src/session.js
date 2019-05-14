@@ -2,7 +2,11 @@ import session, { Session } from 'express-session';
 import redis_store from 'connect-redis';
 import { promisify } from 'util';
 
-import { ApplicationError, SESSION_RETRIEVAL_FAILURE } from './common';
+import {
+	is_production,
+	ApplicationError,
+	SESSION_RETRIEVAL_FAILURE
+} from './common';
 import { redis_client } from './redis';
 
 Session.prototype.regenerate = promisify(Session.prototype.regenerate);
@@ -10,12 +14,7 @@ Session.prototype.destroy = promisify(Session.prototype.destroy);
 Session.prototype.reload = promisify(Session.prototype.reload);
 Session.prototype.save = promisify(Session.prototype.save);
 
-const {
-	SESSION_SECRET,
-	MAX_SESSION_ATTEMPTS,
-	COOKIE_NAME,
-	NODE_ENV
-} = process.env;
+const { SESSION_SECRET, MAX_SESSION_ATTEMPTS, COOKIE_NAME } = process.env;
 
 const RedisStore = redis_store(session);
 
@@ -25,10 +24,10 @@ const base_session_middleware = session({
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
-		secure: NODE_ENV === 'production'
+		secure: is_production
 	},
 	name: COOKIE_NAME,
-	proxy: NODE_ENV === 'production'
+	proxy: is_production
 });
 
 export function session_middleware(req, res, next) {
