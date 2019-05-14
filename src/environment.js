@@ -1,0 +1,31 @@
+// HTTP
+const { PORT } = process.env;
+
+export { PORT };
+
+// OAuth
+const {
+	SLACK_SIGNING_SECRET,
+	SLACK_AUTHORIZATION_URL,
+	SLACK_CLIENT_ID,
+	SLACK_CLIENT_SECRET
+} = process.env;
+
+export {
+	SLACK_SIGNING_SECRET,
+	SLACK_AUTHORIZATION_URL,
+	SLACK_CLIENT_ID,
+	SLACK_CLIENT_SECRET
+};
+
+export const OAUTH_STATE_SIZE = parseInt(process.env.OAUTH_STATE_SIZE, 10);
+
+// Sessions
+const {
+	REDIS_URL,
+	SESSION_SECRET,
+	MAX_SESSION_ATTEMPTS,
+	COOKIE_NAME
+} = process.env;
+
+export { REDIS_URL, SESSION_SECRET, MAX_SESSION_ATTEMPTS, COOKIE_NAME };

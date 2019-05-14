@@ -6,8 +6,7 @@ import * as sapper from '@sapper/server';
 import { slack_middleware, slack_client } from './slack';
 import { session_middleware, get_client_session_data } from './session';
 import { is_development } from './common';
-
-const { PORT } = process.env;
+import { PORT } from './environment';
 
 function provide_slack_client(req, _res, next) {
 	req.slack_client = slack_client;

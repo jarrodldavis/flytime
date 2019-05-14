@@ -15,7 +15,7 @@ import {
 
 import { redis_client } from '../../redis';
 
-const { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } = process.env;
+import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } from '../../environment';
 
 const redis_set = promisify(redis_client.set).bind(redis_client);
 

@@ -7,14 +7,17 @@ import {
 	ApplicationError,
 	SESSION_RETRIEVAL_FAILURE
 } from './common';
+import {
+	SESSION_SECRET,
+	MAX_SESSION_ATTEMPTS,
+	COOKIE_NAME
+} from './environment';
 import { redis_client } from './redis';
 
 Session.prototype.regenerate = promisify(Session.prototype.regenerate);
 Session.prototype.destroy = promisify(Session.prototype.destroy);
 Session.prototype.reload = promisify(Session.prototype.reload);
 Session.prototype.save = promisify(Session.prototype.save);
-
-const { SESSION_SECRET, MAX_SESSION_ATTEMPTS, COOKIE_NAME } = process.env;
 
 const RedisStore = redis_store(session);
 
