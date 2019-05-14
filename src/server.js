@@ -5,9 +5,8 @@ import * as sapper from '@sapper/server';
 
 import { slack_middleware, slack_client } from './slack';
 import { session_middleware, get_client_session_data } from './session';
-
-const { PORT, NODE_ENV } = process.env;
-const dev = NODE_ENV === 'development';
+import { is_development } from './common';
+import { PORT } from './environment';
 
 function provide_slack_client(req, _res, next) {
 	req.slack_client = slack_client;
@@ -19,7 +18,7 @@ express()
 	.use(
 		slack_middleware,
 		compression({ threshold: 0 }),
-		sirv('static', { dev }),
+		sirv('static', { dev: is_development }),
 		provide_slack_client,
 		session_middleware,
 		sapper.middleware({ session: get_client_session_data })

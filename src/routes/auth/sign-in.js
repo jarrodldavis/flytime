@@ -1,8 +1,11 @@
 import uid from 'uid-safe';
 import { OAUTH_STATE_GENERATION_FAILURE, ApplicationError } from '../../common';
 
-const { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID } = process.env;
-const OAUTH_STATE_SIZE = parseInt(process.env.OAUTH_STATE_SIZE, 10);
+import {
+	SLACK_AUTHORIZATION_URL,
+	SLACK_CLIENT_ID,
+	OAUTH_STATE_SIZE
+} from '../../environment';
 
 const SLACK_SCOPES = [
 	'bot',

@@ -1,7 +1,7 @@
 <script>
 	import { stores } from '@sapper/app';
 	import SlackButton from '../components/SlackButton';
-	import { OAUTH_ACCESS_DENIED } from '../common';
+	import { is_development, OAUTH_ACCESS_DENIED } from '../common';
 
 	export let status;
 	export let error;
@@ -23,8 +23,6 @@
 
 	$: code = get_code($session);
 	$: is_auth_callback = $page.path === '/auth/callback';
-
-	const dev = process.env.NODE_ENV === 'development';
 </script>
 
 <style>
@@ -73,6 +71,6 @@
 	</p>
 {/if}
 
-{#if dev && error.stack}
+{#if is_development && error.stack}
 	<pre>{error.stack}</pre>
 {/if}
