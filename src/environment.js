@@ -1,5 +1,17 @@
+function get(target, prop, receiver) {
+	const value = Reflect.get(target, prop, receiver);
+
+	if (value === undefined || value === '') {
+		throw new Error(`Environment variable '${prop}' is not defined`);
+	}
+
+	return value;
+}
+
+const environment = new Proxy(process.env, { get });
+
 // HTTP
-const { PORT } = process.env;
+const { PORT } = environment;
 
 export { PORT };
 
@@ -9,7 +21,7 @@ const {
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	SLACK_CLIENT_SECRET
-} = process.env;
+} = environment;
 
 export {
 	SLACK_SIGNING_SECRET,
@@ -18,7 +30,7 @@ export {
 	SLACK_CLIENT_SECRET
 };
 
-export const OAUTH_STATE_SIZE = parseInt(process.env.OAUTH_STATE_SIZE, 10);
+export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
 
 // Sessions
 const {
@@ -26,6 +38,6 @@ const {
 	SESSION_SECRET,
 	MAX_SESSION_ATTEMPTS,
 	COOKIE_NAME
-} = process.env;
+} = environment;
 
 export { REDIS_URL, SESSION_SECRET, MAX_SESSION_ATTEMPTS, COOKIE_NAME };
