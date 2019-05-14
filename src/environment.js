@@ -1,3 +1,18 @@
+import pino from 'pino';
+
+import { is_development } from './common';
+
+export const logger = pino({ prettyPrint: is_development });
+
+export const GRACEFUL_SHUTDOWN = Symbol('graceful shutdown');
+
+const signal_handler = pino.final(logger, (signal, logger) => {
+	process.emit(GRACEFUL_SHUTDOWN, logger, signal);
+});
+
+process.on('SIGTERM', signal_handler);
+process.on('SIGINT', signal_handler);
+
 function get(target, prop, receiver) {
 	const value = Reflect.get(target, prop, receiver);
 
