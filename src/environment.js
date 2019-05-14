@@ -13,6 +13,23 @@ const signal_handler = pino.final(logger, (signal, logger) => {
 process.on('SIGTERM', signal_handler);
 process.on('SIGINT', signal_handler);
 
+const unhandled_handler = pino.final(logger, (error, logger) => {
+	// It's only safe to do sync cleanup in unhandled error handlers
+	// Since all graceful shutdown logic is async, just terminate
+	logger.fatal(error, 'Immediately terminating due to unhandled error');
+	process.exitCode = 1;
+});
+
+process.on('unhandledRejection', unhandled_handler);
+process.on('uncaughtException', unhandled_handler);
+
+process.on(
+	'exit',
+	pino.final(logger, (exit_code, logger) => {
+		logger.info({ exit_code }, 'Exiting with code %s', exit_code);
+	})
+);
+
 function get(target, prop, receiver) {
 	const value = Reflect.get(target, prop, receiver);
 

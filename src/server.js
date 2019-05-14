@@ -1,4 +1,5 @@
 import { promisify } from 'util';
+import os from 'os';
 import express from 'express';
 import express_pino from 'express-pino-logger';
 import sirv from 'sirv';
@@ -74,6 +75,16 @@ async function graceful_shutdown(logger, signal) {
 	}
 
 	logger.info('Completed shutdown successfully');
+
+	let exit_code = 1;
+	if (signal) {
+		const signal_code = os.constants.signals[signal];
+		if (signal_code) {
+			exit_code = 128 + signal_code;
+		}
+	}
+
+	process.exit(exit_code);
 }
 
 process.on(GRACEFUL_SHUTDOWN, graceful_shutdown);
