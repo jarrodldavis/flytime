@@ -8,6 +8,7 @@ function get(target, prop, receiver) {
 	return value;
 }
 
+// eslint-disable-next-line no-process-env
 const environment = new Proxy(process.env, { get });
 
 // HTTP
