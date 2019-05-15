@@ -9,9 +9,9 @@ export const logger = pino({
 	redact: ['req.headers.cookie', 'res.headers["set-cookie"]']
 });
 
+// lifecycle management
 export const GRACEFUL_SHUTDOWN = Symbol('graceful shutdown');
 
-// lifecycle management
 const signal_handler = pino.final(logger, (signal, logger) => {
 	process.emit(GRACEFUL_SHUTDOWN, logger, signal);
 });
@@ -50,12 +50,12 @@ function get(target, prop, receiver) {
 // eslint-disable-next-line no-process-env
 const environment = new Proxy(process.env, { get });
 
-// HTTP
+// environment variables: HTTP
 const { PORT } = environment;
 
 export { PORT };
 
-// OAuth
+// environment variables: OAuth
 const {
 	SLACK_SIGNING_SECRET,
 	SLACK_AUTHORIZATION_URL,
@@ -72,7 +72,7 @@ export {
 
 export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
 
-// Sessions
+// environment variables: Sessions
 const {
 	REDIS_URL,
 	SESSION_SECRET,
