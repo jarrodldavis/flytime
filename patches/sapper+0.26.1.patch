@@ -47,7 +47,7 @@ index c9744c4..5902f3c 100644
          .on('error', function () {
          cb(port);
 diff --git a/node_modules/sapper/dist/chunk-b0d6f7d4.js b/node_modules/sapper/dist/chunk-b0d6f7d4.js
-index f013ea7..7e0ba0e 100644
+index f013ea7..e26dd44 100644
 --- a/node_modules/sapper/dist/chunk-b0d6f7d4.js
 +++ b/node_modules/sapper/dist/chunk-b0d6f7d4.js
 @@ -146,7 +146,7 @@ class Watcher extends EventEmitter.EventEmitter {
@@ -59,6 +59,97 @@ index f013ea7..7e0ba0e 100644
  
  		let manifest_data;
  
+@@ -257,48 +257,54 @@ class Watcher extends EventEmitter.EventEmitter {
+ 							});
+ 					};
+ 
++					const start_server = () => {
++						// we need to give the child process its own DevTools port,
++						// otherwise Node will try to use the parent's (and fail)
++						const debugArgRegex = /--inspect(?:-brk|-port)?|--debug-port/;
++						const execArgv = process.execArgv.slice();
++						if (execArgv.some((arg) => !!arg.match(debugArgRegex))) {
++							execArgv.push(`--inspect-port=${this.devtools_port}`);
++						}
++
++						this.proc = child_process.fork(`${dest}/server/server.js`, [], {
++							cwd: process.cwd(),
++							env: Object.assign({
++								PORT: this.port
++							}, process.env),
++							stdio: ['ipc'],
++							execArgv
++						});
++
++						this.proc.stdout.on('data', chunk => {
++							this.emit('stdout', chunk);
++						});
++
++						this.proc.stderr.on('data', chunk => {
++							this.emit('stderr', chunk);
++						});
++
++						this.proc.on('message', message => {
++							if (message.__sapper__ && message.event === 'basepath') {
++								this.emit('basepath', {
++									basepath: message.basepath
++								});
++							}
++						});
++
++						this.proc.on('exit', emitFatal);
++					}
++
+ 					if (this.proc) {
+ 						this.proc.removeListener('exit', emitFatal);
+ 						this.proc.kill();
+-						this.proc.on('exit', restart);
++						this.proc.on('exit', () => {
++							start_server();
++							restart();
++						});
+ 					} else {
++						start_server();
+ 						restart();
+ 					}
+-
+-					// we need to give the child process its own DevTools port,
+-					// otherwise Node will try to use the parent's (and fail)
+-					const debugArgRegex = /--inspect(?:-brk|-port)?|--debug-port/;
+-					const execArgv = process.execArgv.slice();
+-					if (execArgv.some((arg) => !!arg.match(debugArgRegex))) {
+-						execArgv.push(`--inspect-port=${this.devtools_port}`);
+-					}
+-
+-					this.proc = child_process.fork(`${dest}/server/server.js`, [], {
+-						cwd: process.cwd(),
+-						env: Object.assign({
+-							PORT: this.port
+-						}, process.env),
+-						stdio: ['ipc'],
+-						execArgv
+-					});
+-
+-					this.proc.stdout.on('data', chunk => {
+-						this.emit('stdout', chunk);
+-					});
+-
+-					this.proc.stderr.on('data', chunk => {
+-						this.emit('stderr', chunk);
+-					});
+-
+-					this.proc.on('message', message => {
+-						if (message.__sapper__ && message.event === 'basepath') {
+-							this.emit('basepath', {
+-								basepath: message.basepath
+-							});
+-						}
+-					});
+-
+-					this.proc.on('exit', emitFatal);
+ 				});
+ 			}
+ 		});
 diff --git a/node_modules/sapper/runtime/server.mjs b/node_modules/sapper/runtime/server.mjs
 index 61de2f6..ffa590e 100644
 --- a/node_modules/sapper/runtime/server.mjs
