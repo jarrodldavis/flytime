@@ -6,13 +6,13 @@ import {
 	is_production,
 	ApplicationError,
 	SESSION_RETRIEVAL_FAILURE
-} from './common';
+} from '../common';
 import {
 	SESSION_SECRET,
 	MAX_SESSION_ATTEMPTS,
 	COOKIE_NAME
 } from './environment';
-import { redis_client } from './redis';
+import { redis_client } from './external-services';
 
 Session.prototype.regenerate = promisify(Session.prototype.regenerate);
 Session.prototype.destroy = promisify(Session.prototype.destroy);

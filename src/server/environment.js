@@ -1,6 +1,6 @@
 import pino from 'pino';
 
-import { is_development } from './common';
+import { is_development } from '../common';
 
 // logger
 export const logger = pino({

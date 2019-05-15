@@ -7,10 +7,10 @@ import compression from 'compression';
 import * as sapper from '@sapper/server';
 
 import { slack_middleware, slack_client } from './slack';
-import { session_middleware, get_client_session_data } from './session';
-import { redis_client } from './redis';
 import { is_development } from './common';
-import { logger, GRACEFUL_SHUTDOWN, PORT } from './environment';
+import { session_middleware, get_client_session_data } from './server/session';
+import { redis_client } from './server/external-services';
+import { logger, GRACEFUL_SHUTDOWN, PORT } from './server/environment';
 
 logger.info('Starting up...');
 

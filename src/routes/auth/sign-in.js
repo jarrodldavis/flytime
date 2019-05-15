@@ -5,7 +5,7 @@ import {
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	OAUTH_STATE_SIZE
-} from '../../environment';
+} from '../../server/environment';
 
 const SLACK_SCOPES = [
 	'bot',

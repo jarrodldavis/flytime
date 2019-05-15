@@ -13,9 +13,9 @@ import {
 	OAUTH_MISSING_USER_ID
 } from '../../common';
 
-import { redis_client } from '../../redis';
+import { redis_client } from '../../server/external-services';
 
-import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } from '../../environment';
+import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } from '../../server/environment';
 
 const redis_set = promisify(redis_client.set).bind(redis_client);
 

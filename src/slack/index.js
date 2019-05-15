@@ -1,8 +1,8 @@
 import { promisify } from 'util';
 import { App } from '@slack/bolt';
-import { redis_client } from '../redis';
+import { redis_client } from '../server/external-services';
 
-import { SLACK_SIGNING_SECRET } from '../environment';
+import { SLACK_SIGNING_SECRET } from '../server/environment';
 
 const redis_get = promisify(redis_client.get).bind(redis_client);
 
