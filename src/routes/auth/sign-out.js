@@ -9,24 +9,22 @@ import {
 export async function post(req, res) {
 	if (res.locals.error) {
 		const error = res.locals.error;
-		return res
-			.status(error.status || STATUS_APPLICATION_ERROR)
-			.json({ error: error.code });
+		return res.send(error.status || STATUS_APPLICATION_ERROR, {
+			error: error.code
+		});
 	}
 
 	if (!req.session.user) {
-		return res
-			.status(STATUS_AUTHORIZATION_ERROR)
-			.json({ error: NOT_SIGNED_IN });
+		return res.send(STATUS_AUTHORIZATION_ERROR, { error: NOT_SIGNED_IN });
 	}
 
 	try {
 		await req.session.destroy();
 	} catch (error) {
-		return res
-			.status(STATUS_APPLICATION_ERROR)
-			.json({ error: SESSION_DESTROY_FAILURE });
+		return res.send(STATUS_APPLICATION_ERROR, {
+			error: SESSION_DESTROY_FAILURE
+		});
 	}
 
-	res.status(STATUS_SUCCESS_NO_CONTENT).end();
+	res.send(STATUS_SUCCESS_NO_CONTENT);
 }

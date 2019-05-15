@@ -37,6 +37,7 @@ export const SLACK_SIGNATURE_MISSING = 'slack_signature_missing';
 export const SLACK_SIGNATURE_MISMATCH = 'slack_signature_mismatch';
 
 // HTTP headers
+export const HEADER_CONTENT_TYPE = 'content-type';
 export const HEADER_CONTENT_LENGTH = 'content-length';
 export const HEADER_SLACK_TIMESTAMP = 'x-slack-request-timestamp';
 export const HEADER_SLACK_SIGNATURE = 'x-slack-signature';
@@ -50,6 +51,7 @@ export const STATUS_APPLICATION_ERROR = 500;
 export const STATUS_AUTHORIZATION_ERROR = 403;
 export const STATUS_AUTHENTICATION_ERROR = 401;
 export const STATUS_REQUEST_ERROR = 400;
+export const STATUS_REDIRECT = 302;
 export const STATUS_SUCCESS_NO_CONTENT = 204;
 export const STATUS_SUCCESS_WITH_CONTENT = 200;
 

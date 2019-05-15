@@ -1,3 +1,5 @@
+import { HEADER_CONTENT_TYPE, CONTENT_TYPE_JSON } from '../../common';
+
 /* eslint-env browser */
 
 export async function sign_out() {
@@ -8,7 +10,12 @@ export async function sign_out() {
 		);
 	}
 
-	const response = await fetch('/auth/sign-out', { method: 'POST' });
+	const response = await fetch('/auth/sign-out', {
+		method: 'POST',
+		body: '{}',
+		headers: { [HEADER_CONTENT_TYPE]: CONTENT_TYPE_JSON }
+	});
+
 	if (response.ok) {
 		return;
 	}

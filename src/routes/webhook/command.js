@@ -1,5 +1,9 @@
 import { verify } from './_helpers';
-import { STATUS_APPLICATION_ERROR } from '../../common';
+import {
+	STATUS_APPLICATION_ERROR,
+	STATUS_SUCCESS_NO_CONTENT,
+	STATUS_SUCCESS_WITH_CONTENT
+} from '../../common';
 
 export async function post(req, res) {
 	if (res.locals.error) {
@@ -10,7 +14,7 @@ export async function post(req, res) {
 	}
 
 	if (req.body.ssl_check) {
-		return res.status(204).end();
+		return res.send(STATUS_SUCCESS_NO_CONTENT);
 	}
 
 	try {
@@ -21,5 +25,5 @@ export async function post(req, res) {
 			.json({ error: error.code });
 	}
 
-	res.status(200).json({ text: 'TODO' });
+	res.send(STATUS_SUCCESS_WITH_CONTENT, { text: 'TODO' });
 }
