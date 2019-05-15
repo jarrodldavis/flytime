@@ -1,0 +1,13 @@
+diff --git a/node_modules/pino-std-serializers/lib/res.js b/node_modules/pino-std-serializers/lib/res.js
+index 1ddeee0..0c2b541 100644
+--- a/node_modules/pino-std-serializers/lib/res.js
++++ b/node_modules/pino-std-serializers/lib/res.js
+@@ -35,7 +35,7 @@ Object.defineProperty(pinoResProto, rawSymbol, {
+ function resSerializer (res) {
+   const _res = Object.create(pinoResProto)
+   _res.statusCode = res.statusCode
+-  _res.headers = res._headers
++  _res.headers = res.getHeaders();
+   _res.raw = res
+   return _res
+ }
