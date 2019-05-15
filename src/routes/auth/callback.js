@@ -13,7 +13,7 @@ import {
 	OAUTH_MISSING_USER_ID
 } from '../../common';
 
-import { redis_client } from '../../server/external-services';
+import { redis_client, slack_client } from '../../server/external-services';
 
 import { SLACK_CLIENT_ID, SLACK_CLIENT_SECRET } from '../../server/environment';
 
@@ -48,7 +48,7 @@ export async function get(req, res, next) {
 
 	let result = null;
 	try {
-		result = await req.slack_client.oauth.access({
+		result = await slack_client.oauth.access({
 			client_id: SLACK_CLIENT_ID,
 			client_secret: SLACK_CLIENT_SECRET,
 			code: req.query.code,
@@ -65,7 +65,7 @@ export async function get(req, res, next) {
 		const { bot_user_id, bot_access_token } = result.bot;
 		const bot = { token: bot_access_token, user: bot_user_id };
 
-		const bot_user = await req.slack_client.users.info(bot);
+		const bot_user = await slack_client.users.info(bot);
 		bot.id = bot_user.user.profile.bot_id;
 
 		await redis_set(`bot:${team_id}`, JSON.stringify(bot));
@@ -100,8 +100,8 @@ export async function get(req, res, next) {
 
 	try {
 		const [{ user }, { team }] = await Promise.all([
-			req.slack_client.users.info({ token: access_token, user: user_id }),
-			req.slack_client.team.info({ token: access_token })
+			slack_client.users.info({ token: access_token, user: user_id }),
+			slack_client.team.info({ token: access_token })
 		]);
 		req.session.user = user;
 		req.session.team = team;

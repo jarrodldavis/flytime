@@ -55,20 +55,24 @@ const { PORT } = environment;
 
 export { PORT };
 
+// environment variables: Webhook Payload Signing
+const { SLACK_SIGNING_SECRET } = environment;
+
+export { SLACK_SIGNING_SECRET };
+
+export const SLACK_SIGNING_RANDOM_KEY_SIZE = parseInt(
+	environment.SLACK_SIGNING_RANDOM_KEY_SIZE,
+	10
+);
+
 // environment variables: OAuth
 const {
-	SLACK_SIGNING_SECRET,
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	SLACK_CLIENT_SECRET
 } = environment;
 
-export {
-	SLACK_SIGNING_SECRET,
-	SLACK_AUTHORIZATION_URL,
-	SLACK_CLIENT_ID,
-	SLACK_CLIENT_SECRET
-};
+export { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID, SLACK_CLIENT_SECRET };
 
 export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
 

@@ -6,11 +6,11 @@ import sirv from 'sirv';
 import compression from 'compression';
 import * as sapper from '@sapper/server';
 
-import { slack_middleware, slack_client } from './slack';
 import { is_development } from './common';
-import { session_middleware, get_client_session_data } from './server/session';
-import { redis_client } from './server/external-services';
 import { logger, GRACEFUL_SHUTDOWN, PORT } from './server/environment';
+import { session_middleware, get_client_session_data } from './server/session';
+import { parse_body } from './server/request-body';
+import { redis_client } from './server/external-services';
 
 logger.info('Starting up...');
 
@@ -19,20 +19,14 @@ function provide_request_id(req, _res, next) {
 	next();
 }
 
-function provide_slack_client(req, _res, next) {
-	req.slack_client = slack_client;
-	next();
-}
-
 const server = express()
 	.set('trust proxy', true)
 	.use(
 		provide_request_id,
 		express_pino({ logger }),
-		slack_middleware,
+		parse_body,
 		compression({ threshold: 0 }),
 		sirv('static', { dev: is_development }),
-		provide_slack_client,
 		session_middleware,
 		sapper.middleware({ session: get_client_session_data })
 	)

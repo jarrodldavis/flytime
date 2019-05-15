@@ -26,10 +26,30 @@ export const OAUTH_MISSING_CODE = 'oauth_missing_code';
 // authorization errors
 export const NOT_SIGNED_IN = 'not_signed_in';
 
+// request errors
+export const CONTENT_TYPE_INVALID = 'content_type_invalid';
+export const CONTENT_TYPE_UNSUPPORTED = 'content_type_unsupported';
+export const REQUEST_BODY_PARSE_ERROR = 'request_body_parse_error';
+export const SLACK_TIMESTAMP_MISSING = 'slack_timestamp_missing';
+export const SLACK_TIMESTAMP_INVALID = 'slack_timestamp_invalid';
+export const SLACK_TIMESTAMP_TOO_OLD = 'slack_timestamp_too_old';
+export const SLACK_SIGNATURE_MISSING = 'slack_signature_missing';
+export const SLACK_SIGNATURE_MISMATCH = 'slack_signature_mismatch';
+
+// HTTP headers
+export const HEADER_CONTENT_LENGTH = 'content-length';
+export const HEADER_SLACK_TIMESTAMP = 'x-slack-request-timestamp';
+export const HEADER_SLACK_SIGNATURE = 'x-slack-signature';
+
+// Content-Type header values
+export const CONTENT_TYPE_JSON = 'application/json';
+export const CONTENT_TYPE_URLENCODED = 'application/x-www-form-urlencoded';
+
 // HTTP status codes
 export const STATUS_APPLICATION_ERROR = 500;
 export const STATUS_AUTHORIZATION_ERROR = 403;
 export const STATUS_AUTHENTICATION_ERROR = 401;
+export const STATUS_REQUEST_ERROR = 400;
 export const STATUS_SUCCESS_NO_CONTENT = 204;
 export const STATUS_SUCCESS_WITH_CONTENT = 200;
 
@@ -54,8 +74,14 @@ export class ApplicationError extends CodedError {
 	}
 }
 
-export class AuthenticationError extends ApplicationError {
+export class AuthenticationError extends CodedError {
 	constructor(code, message = 'Authentication Failed') {
 		super(code, message, STATUS_AUTHENTICATION_ERROR);
+	}
+}
+
+export class RequestError extends CodedError {
+	constructor(code, message = 'Request Failed') {
+		super(code, message, STATUS_REQUEST_ERROR);
 	}
 }

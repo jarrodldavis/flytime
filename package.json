@@ -23,13 +23,16 @@
     "npm": "^6.9.0"
   },
   "dependencies": {
-    "@slack/bolt": "^1.0.1",
+    "@slack/web-api": "^5.0.1",
     "compression": "^1.7.1",
     "connect-redis": "^3.4.1",
+    "content-type": "^1.0.4",
     "express": "^4.16.4",
     "express-pino-logger": "^4.0.0",
     "express-session": "^1.16.1",
+    "luxon": "^1.13.2",
     "pino": "^5.12.3",
+    "raw-body": "^2.4.0",
     "redis": "^2.8.0",
     "sirv": "^0.4.0",
     "uid-safe": "^2.1.5"
