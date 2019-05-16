@@ -6,6 +6,7 @@
 	"typescript.format.enable": false,
 
 	// enable and configure linters
+	"javascript.validate.enable": false,
 	"eslint.enable": true,
 	"eslint.packageManager": "npm",
 	"eslint.provideLintTask": true,

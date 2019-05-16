@@ -1,12 +1,14 @@
 import { IncomingMessage } from 'http';
 
 export class Request extends IncomingMessage {
+	#id = undefined;
+
 	get id() {
-		return this._id || this.headers['x-request-id'];
+		return this.#id || this.headers['x-request-id'];
 	}
 
 	set id(value) {
-		this._id = value;
+		this.#id = value;
 	}
 
 	get host() {

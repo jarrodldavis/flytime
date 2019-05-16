@@ -1,0 +1,29 @@
+diff --git a/node_modules/espree/espree.js b/node_modules/espree/espree.js
+index 7c16b69..cd49faa 100644
+--- a/node_modules/espree/espree.js
++++ b/node_modules/espree/espree.js
+@@ -59,6 +59,7 @@
+ "use strict";
+ 
+ const acorn = require("acorn");
++const class_fields = require("acorn-class-fields");
+ const jsx = require("acorn-jsx");
+ const astNodeTypes = require("./lib/ast-node-types");
+ const espree = require("./lib/espree");
+@@ -70,14 +71,14 @@ const parsers = {
+ 
+     get regular() {
+         if (this._regular === null) {
+-            this._regular = acorn.Parser.extend(espree());
++            this._regular = acorn.Parser.extend(class_fields, espree());
+         }
+         return this._regular;
+     },
+ 
+     get jsx() {
+         if (this._jsx === null) {
+-            this._jsx = acorn.Parser.extend(jsx(), espree());
++            this._jsx = acorn.Parser.extend(class_fields, jsx(), espree());
+         }
+         return this._jsx;
+     },

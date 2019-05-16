@@ -1,4 +1,5 @@
 import { promisify } from 'util';
+import { createServer } from 'http';
 import os from 'os';
 import polka from 'polka';
 import { json, urlencoded } from '@polka/parse';
@@ -17,15 +18,11 @@ import { error_handler } from './server/error-handler';
 
 logger.info('Starting up...');
 
-function provide_overrides(req, res, next) {
-	Object.setPrototypeOf(req, Request.prototype);
-	Object.setPrototypeOf(res, Response.prototype);
-	next();
-}
-
-const app = polka({ onError: error_handler })
+const app = polka({
+	server: createServer({ IncomingMessage: Request, ServerResponse: Response }),
+	onError: error_handler
+})
 	.use(
-		provide_overrides,
 		pino_http({ logger }),
 		negotiate_content,
 		json(),
