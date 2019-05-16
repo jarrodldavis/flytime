@@ -1,11 +1,11 @@
 import uid from 'uid-safe';
-import { OAUTH_STATE_GENERATION_FAILURE, ApplicationError } from '../../common';
 
 import {
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	OAUTH_STATE_SIZE
 } from '../../server/environment';
+import { sapper_fallback } from './_helpers';
 
 const SLACK_SCOPES = [
 	'bot',
@@ -16,22 +16,8 @@ const SLACK_SCOPES = [
 	'users.profile:write'
 ].join(',');
 
-export async function get(req, res, next) {
-	if (res.locals.error) {
-		// fallback to Sapper error page
-		return next();
-	}
-
-	let state;
-	try {
-		state = await uid(OAUTH_STATE_SIZE);
-	} catch (error) {
-		error.code = OAUTH_STATE_GENERATION_FAILURE;
-		res.locals.error = new ApplicationError(error);
-		// fallback to Sapper error page
-		return next();
-	}
-
+export const get = sapper_fallback(async function get(req, res) {
+	const state = await uid(OAUTH_STATE_SIZE);
 	req.session.state = state;
 
 	const authorization_url = new URL(SLACK_AUTHORIZATION_URL);
@@ -44,4 +30,4 @@ export async function get(req, res, next) {
 	);
 
 	res.redirect(authorization_url.toString());
-}
+});

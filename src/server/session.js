@@ -1,12 +1,9 @@
 import session, { Session } from 'express-session';
 import redis_store from 'connect-redis';
 import { promisify } from 'util';
+import http_error, { InternalServerError } from 'http-errors';
 
-import {
-	is_production,
-	ApplicationError,
-	SESSION_RETRIEVAL_FAILURE
-} from '../common';
+import { is_production } from '../common';
 import {
 	SESSION_SECRET,
 	MAX_SESSION_ATTEMPTS,
@@ -38,9 +35,7 @@ export function session_middleware(req, res, next) {
 
 	function try_get_session(error) {
 		if (error) {
-			error.code = error.code || SESSION_RETRIEVAL_FAILURE;
-			res.locals.error = new ApplicationError(error);
-			return next();
+			return next(error);
 		}
 
 		attempts_left -= 1;
@@ -51,8 +46,11 @@ export function session_middleware(req, res, next) {
 
 		if (attempts_left === 0) {
 			req.session = null;
-			res.locals.error = new ApplicationError(SESSION_RETRIEVAL_FAILURE);
-			return next();
+			return next(
+				new InternalServerError(
+					`Failed to retrieve session after ${MAX_SESSION_ATTEMPTS} attempts.`
+				)
+			);
 		}
 
 		base_session_middleware(req, res, try_get_session);
@@ -64,11 +62,11 @@ export function session_middleware(req, res, next) {
 export function get_client_session_data(req, res) {
 	const { user, team } = req.session || {};
 
-	let { error } = res.locals;
+	let error = res.err;
 	if (error) {
 		// clone error into plain object and filter unneeded properties
-		const { message, code, status } = error;
-		error = { message, code, status };
+		const { status, message, expose } = http_error(error);
+		error = { status, message, expose };
 	}
 
 	return { error, user, team };

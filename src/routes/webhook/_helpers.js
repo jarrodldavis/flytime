@@ -1,29 +1,23 @@
 /* eslint-env node */
 import crypto from 'crypto';
 import { DateTime } from 'luxon';
+import { BadRequest as RequestError } from 'http-errors';
 import {
 	SLACK_SIGNING_SECRET,
 	SLACK_SIGNING_RANDOM_KEY_SIZE
 } from '../../server/environment';
-import {
-	RequestError,
-	HEADER_SLACK_TIMESTAMP,
-	HEADER_SLACK_SIGNATURE,
-	SLACK_TIMESTAMP_MISSING,
-	SLACK_TIMESTAMP_INVALID,
-	SLACK_TIMESTAMP_TOO_OLD,
-	SLACK_SIGNATURE_MISSING,
-	SLACK_SIGNATURE_MISMATCH
-} from '../../common';
+
+export const HEADER_SLACK_TIMESTAMP = 'x-slack-request-timestamp';
+export const HEADER_SLACK_SIGNATURE = 'x-slack-signature';
 
 function get_timestamp(req) {
 	const timestamp = req.headers[HEADER_SLACK_TIMESTAMP];
 	if (!timestamp) {
-		throw new RequestError(SLACK_TIMESTAMP_MISSING);
+		throw new RequestError('Missing Slack timestamp');
 	}
 
 	if (!/^\d+$/.test(timestamp)) {
-		throw new RequestError(SLACK_TIMESTAMP_INVALID);
+		throw new RequestError('Invalid Slack timestamp');
 	}
 
 	const parsed_timestamp = DateTime.fromSeconds(parseInt(timestamp, 10), {
@@ -31,7 +25,7 @@ function get_timestamp(req) {
 	});
 
 	if (!parsed_timestamp.isValid) {
-		throw new RequestError(SLACK_TIMESTAMP_INVALID);
+		throw new RequestError('Invalid Slack timestamp');
 	}
 
 	const minute_difference = parsed_timestamp
@@ -40,7 +34,7 @@ function get_timestamp(req) {
 		.as('minutes');
 
 	if (minute_difference < 0 || minute_difference > 5) {
-		throw new RequestError(SLACK_TIMESTAMP_TOO_OLD);
+		throw new RequestError('Slack timestamp is too old');
 	}
 
 	return timestamp;
@@ -49,7 +43,7 @@ function get_timestamp(req) {
 function get_signature(req) {
 	const provided_signature = req.headers[HEADER_SLACK_SIGNATURE];
 	if (!provided_signature) {
-		throw new RequestError(SLACK_SIGNATURE_MISSING);
+		throw new RequestError('Missing Slack signature');
 	}
 
 	const [version] = provided_signature.split('=');
@@ -62,7 +56,7 @@ export async function verify(req) {
 
 	const computed_digest = crypto
 		.createHmac('sha256', SLACK_SIGNING_SECRET)
-		.update(`${version}:${timestamp}:${req.raw_body}`, req.encoding)
+		.update(`${version}:${timestamp}:${req.raw}`, req.encoding)
 		.digest('hex');
 
 	const random_key = crypto.randomBytes(SLACK_SIGNING_RANDOM_KEY_SIZE);
@@ -76,6 +70,6 @@ export async function verify(req) {
 		.digest();
 
 	if (!crypto.timingSafeEqual(computed_buffer, provided_buffer)) {
-		throw new RequestError(SLACK_SIGNATURE_MISMATCH);
+		throw new RequestError('Slack signature mismatch');
 	}
 }

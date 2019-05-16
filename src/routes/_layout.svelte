@@ -1,4 +1,6 @@
 <script context="module">
+	import { unexposed_error_message } from '../common';
+
 	export function preload(page, session) {
 		if (page.error) {
 			return;
@@ -6,7 +8,8 @@
 
 		const error = session.error;
 		if (error) {
-			this.error(error.status || 500, error.message);
+			const { status, message, expose } = error;
+			this.error(status, expose ? message : unexposed_error_message);
 		}
 	}
 </script>

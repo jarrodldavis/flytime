@@ -151,10 +151,24 @@ index f013ea7..e26dd44 100644
  			}
  		});
 diff --git a/node_modules/sapper/runtime/server.mjs b/node_modules/sapper/runtime/server.mjs
-index 61de2f6..ffa590e 100644
+index 61de2f6..f4b51bb 100644
 --- a/node_modules/sapper/runtime/server.mjs
 +++ b/node_modules/sapper/runtime/server.mjs
-@@ -2239,7 +2239,8 @@ function get_page_handler(
+@@ -54,12 +54,7 @@ function get_server_route_handler(routes) {
+ 			}
+ 
+ 			const handle_next = (err) => {
+-				if (err) {
+-					res.statusCode = 500;
+-					res.end(err.message);
+-				} else {
+-					process.nextTick(next);
+-				}
++				process.nextTick(next, err);
+ 			};
+ 
+ 			try {
+@@ -2239,7 +2234,8 @@ function get_page_handler(
  				? manifest.root_preload.call(preload_context, {
  					path: req.path,
  					query: req.query,
@@ -164,3 +178,16 @@ index 61de2f6..ffa590e 100644
  				}, session)
  				: {};
  
+@@ -2561,7 +2557,11 @@ function compose_handlers(handlers) {
+ 			const handler = handlers[i];
+ 
+ 			if (handler) {
+-				handler(req, res, () => {
++				handler(req, res, (err) => {
++					if (err) {
++						return next(err);
++					}
++
+ 					i += 1;
+ 					go();
+ 				});

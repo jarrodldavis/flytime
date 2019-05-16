@@ -1,0 +1,12 @@
+diff --git a/node_modules/@polka/parse/index.js b/node_modules/@polka/parse/index.js
+index 954dede..fbc812b 100644
+--- a/node_modules/@polka/parse/index.js
++++ b/node_modules/@polka/parse/index.js
+@@ -38,6 +38,7 @@ function parse(opts={}) {
+ 			try {
+ 				req.body = parser(bits);
+ 				req._body = true;
++				req.raw = bits;
+ 				next();
+ 			} catch (err) {
+ 				err.code = 422;

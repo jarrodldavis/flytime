@@ -1,30 +1,11 @@
-import {
-	SESSION_DESTROY_FAILURE,
-	NOT_SIGNED_IN,
-	STATUS_APPLICATION_ERROR,
-	STATUS_AUTHORIZATION_ERROR,
-	STATUS_SUCCESS_NO_CONTENT
-} from '../../common';
+import { Unauthorized as AuthenticationError } from 'http-errors';
 
 export async function post(req, res) {
-	if (res.locals.error) {
-		const error = res.locals.error;
-		return res.send(error.status || STATUS_APPLICATION_ERROR, {
-			error: error.code
-		});
-	}
-
 	if (!req.session.user) {
-		return res.send(STATUS_AUTHORIZATION_ERROR, { error: NOT_SIGNED_IN });
+		throw new AuthenticationError('Not signed in');
 	}
 
-	try {
-		await req.session.destroy();
-	} catch (error) {
-		return res.send(STATUS_APPLICATION_ERROR, {
-			error: SESSION_DESTROY_FAILURE
-		});
-	}
+	await req.session.destroy();
 
-	res.send(STATUS_SUCCESS_NO_CONTENT);
+	res.send(204);
 }

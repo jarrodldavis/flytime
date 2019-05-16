@@ -23,7 +23,7 @@ const unhandled_handler = pino.final(logger, (error, logger) => {
 	// It's only safe to do sync cleanup in unhandled error handlers
 	// Since all graceful shutdown logic is async, just terminate
 	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
-	process.exitCode = 1;
+	process.exit(1);
 });
 
 process.on('unhandledRejection', unhandled_handler);

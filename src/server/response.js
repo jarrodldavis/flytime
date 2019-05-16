@@ -1,14 +1,14 @@
 import { ServerResponse } from 'http';
 import send from '@polka/send';
-import { STATUS_SUCCESS_WITH_CONTENT, STATUS_REDIRECT } from '../common';
+import redirect from '@polka/redirect';
 
 export class Response extends ServerResponse {
-	send(code = STATUS_SUCCESS_WITH_CONTENT, data = '', headers = {}) {
+	send(code = 200, data = '', headers = {}) {
 		send(this, code, data, headers);
 	}
 
-	redirect(location, code = STATUS_REDIRECT) {
-		this.send(code, null, { location });
+	redirect(location, code = 302) {
+		redirect(this, code, location);
 	}
 
 	get locals() {

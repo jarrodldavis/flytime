@@ -1,18 +1,19 @@
 import { promisify } from 'util';
 import os from 'os';
 import polka from 'polka';
+import { json, urlencoded } from '@polka/parse';
 import pino_http from 'pino-http';
 import sirv from 'sirv';
-import compression from 'compression';
 import * as sapper from '@sapper/server';
 
 import { is_development } from './common';
 import { logger, GRACEFUL_SHUTDOWN, PORT } from './server/environment';
 import { session_middleware, get_client_session_data } from './server/session';
-import { parse_body } from './server/request-body';
 import { redis_client } from './server/external-services';
 import { Request } from './server/request';
 import { Response } from './server/response';
+import { negotiate_content } from './server/content-negotiation';
+import { error_handler } from './server/error-handler';
 
 logger.info('Starting up...');
 
@@ -22,12 +23,13 @@ function provide_overrides(req, res, next) {
 	next();
 }
 
-const app = polka()
+const app = polka({ onError: error_handler })
 	.use(
 		provide_overrides,
 		pino_http({ logger }),
-		parse_body,
-		compression({ threshold: 0 }),
+		negotiate_content,
+		json(),
+		urlencoded(),
 		sirv('static', { dev: is_development }),
 		session_middleware,
 		sapper.middleware({ session: get_client_session_data })
