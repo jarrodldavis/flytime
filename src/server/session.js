@@ -3,7 +3,7 @@ import redis_store from 'connect-redis';
 import { promisify } from 'util';
 import http_error, { InternalServerError } from 'http-errors';
 
-import { is_production } from '../common';
+import { is_production, unexposed_error_message } from '../common';
 import {
 	SESSION_SECRET,
 	MAX_SESSION_ATTEMPTS,
@@ -71,9 +71,8 @@ export function get_client_session_data(req, res) {
 
 	let error = res.err;
 	if (error) {
-		// clone error into plain object and filter unneeded properties
 		const { status, message, expose } = http_error(error);
-		error = { status, message, expose };
+		error = { status, message: expose ? message : unexposed_error_message };
 	}
 
 	return { error, user, team };

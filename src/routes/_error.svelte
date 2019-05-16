@@ -14,6 +14,8 @@
 				return 'Authorization Error';
 			case 403:
 				return 'Authorization Error';
+			case 404:
+				return 'Page Not Found';
 			default:
 				return 'Application Error';
 		}
@@ -59,17 +61,26 @@
 	<p>There was a problem connecting Flytime with Slack.</p>
 	<p>Please try signing in again.</p>
 	<SlackButton />
+{:else if status === 404}
+	<p>
+		The page
+		<code>{$page.path}</code>
+		can't be found.
+	</p>
 {:else}
 	<p>An unexpected problem occurred. Please try refreshing the page.</p>
 {/if}
 
 <p>
 	<small>
-		Error Details: HTTP {status}.
-		{#if is_development && error.stack}
-			<pre>{error.stack}</pre>
-		{:else if message && message !== unexposed_error_message}
-			<code>{message}</code>
-		{/if}
+		<details>
+			<summary>Error Details</summary>
+			HTTP {status}.
+			{#if is_development && error.stack}
+				<pre>{error.stack}</pre>
+			{:else if message && message !== unexposed_error_message}
+				<code>{message}</code>
+			{/if}
+		</details>
 	</small>
 </p>

@@ -33,8 +33,12 @@ function get_timestamp(req) {
 		.negate()
 		.as('minutes');
 
-	if (minute_difference < 0 || minute_difference > 5) {
+	if (minute_difference > 5) {
 		throw new RequestError('Slack timestamp is too old');
+	}
+
+	if (minute_difference < 0) {
+		throw new RequestError('Slack timestamp is too new');
 	}
 
 	return timestamp;
