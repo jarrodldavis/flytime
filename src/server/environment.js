@@ -77,11 +77,11 @@ export { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID, SLACK_CLIENT_SECRET };
 export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
 
 // environment variables: Sessions
-const {
-	REDIS_URL,
-	SESSION_SECRET,
-	MAX_SESSION_ATTEMPTS,
-	COOKIE_NAME
-} = environment;
+const { REDIS_URL, SESSION_SECRET, COOKIE_NAME } = environment;
 
-export { REDIS_URL, SESSION_SECRET, MAX_SESSION_ATTEMPTS, COOKIE_NAME };
+export { REDIS_URL, SESSION_SECRET, COOKIE_NAME };
+
+export const MAX_SESSION_ATTEMPTS = parseInt(
+	environment.MAX_SESSION_ATTEMPTS,
+	10
+);

@@ -31,7 +31,14 @@ const base_session_middleware = session({
 });
 
 export function session_middleware(req, res, next) {
-	let attempts_left = MAX_SESSION_ATTEMPTS;
+	const path = req.path;
+	// no need to retrieve session for Sapper-served static assets
+	if (path.startsWith('/service-worker') || path.startsWith('/client')) {
+		req.session = null;
+		return next();
+	}
+
+	let attempts_left = MAX_SESSION_ATTEMPTS + 1;
 
 	function try_get_session(error) {
 		if (error) {

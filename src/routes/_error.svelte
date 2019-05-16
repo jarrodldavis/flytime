@@ -8,9 +8,21 @@
 
 	const OAUTH_ACCESS_DENIED = 'OAuth Error: access_denied';
 
+	function get_title(status) {
+		switch (status) {
+			case 401:
+				return 'Authorization Error';
+			case 403:
+				return 'Authorization Error';
+			default:
+				return 'Application Error';
+		}
+	}
+
 	const { page } = stores();
 
 	$: is_auth_callback = $page.path === '/auth/callback';
+	$: title = get_title(status);
 	$: message = error.message;
 </script>
 
@@ -32,10 +44,10 @@
 </style>
 
 <svelte:head>
-	<title>{status} Error</title>
+	<title>{title}</title>
 </svelte:head>
 
-<h1>Error</h1>
+<h1>{title}</h1>
 
 {#if message === OAUTH_ACCESS_DENIED}
 	<p>
@@ -44,7 +56,7 @@
 	<p>Please try signing in again.</p>
 	<SlackButton />
 {:else if is_auth_callback}
-	<p>There was a problem authenticating Flytime with Slack.</p>
+	<p>There was a problem connecting Flytime with Slack.</p>
 	<p>Please try signing in again.</p>
 	<SlackButton />
 {:else}
@@ -53,11 +65,10 @@
 
 <p>
 	<small>
+		Error Details: HTTP {status}.
 		{#if is_development && error.stack}
-			Error Details:
 			<pre>{error.stack}</pre>
 		{:else if message && message !== unexposed_error_message}
-			Error Details:
 			<code>{message}</code>
 		{/if}
 	</small>

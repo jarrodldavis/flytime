@@ -11,11 +11,14 @@ import { sapper_fallback } from './_helpers';
 const redis_set = promisify(redis_client.set).bind(redis_client);
 
 export const get = sapper_fallback(async function get(req, res) {
+	const session_state = req.session.state;
+	delete req.session.state;
+
 	if (!req.query.state) {
 		throw new AuthenticationError('Missing Slack-provided OAuth state');
-	} else if (!req.session.state) {
+	} else if (!session_state) {
 		throw new AuthenticationError('Missing session-provided OAuth state');
-	} else if (req.query.state !== req.session.state) {
+	} else if (req.query.state !== session_state) {
 		throw new AuthenticationError('OAuth state-mismatch');
 	} else if (req.query.error) {
 		throw new AuthenticationError(`OAuth Error: ${req.query.error}`);
@@ -31,7 +34,6 @@ export const get = sapper_fallback(async function get(req, res) {
 	});
 
 	const { access_token, scope, user_id, team_id } = result;
-
 	if (!access_token) {
 		throw new ApplicationError('Missing access token from OAuth response');
 	}
@@ -50,16 +52,16 @@ export const get = sapper_fallback(async function get(req, res) {
 		slack_client.team.info({ token: access_token })
 	]);
 
-	req.session.token = access_token;
-	req.session.scopes = scope.split(',');
-	req.session.user = user;
-	req.session.team = team;
-
 	const { bot_user_id, bot_access_token } = result.bot;
 	const bot = { token: bot_access_token, user: bot_user_id };
 	const bot_user = await slack_client.users.info(bot);
 	bot.id = bot_user.user.profile.bot_id;
 	await redis_set(`bot:${team_id}`, JSON.stringify(bot));
+
+	req.session.token = access_token;
+	req.session.scopes = scope.split(',');
+	req.session.user = user;
+	req.session.team = team;
 
 	return res.redirect('/');
 });

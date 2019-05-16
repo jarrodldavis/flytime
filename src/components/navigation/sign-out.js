@@ -9,7 +9,6 @@ export async function sign_out() {
 	}
 
 	const response = await fetch('/auth/sign-out', { method: 'POST' });
-
 	if (response.ok) {
 		return;
 	}
