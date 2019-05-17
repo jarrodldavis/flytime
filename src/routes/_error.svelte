@@ -75,7 +75,7 @@
 	<small>
 		<details>
 			<summary>Error Details</summary>
-			HTTP {status}.
+			<span>HTTP {status}.</span>
 			{#if is_development && error.stack}
 				<pre>{error.stack}</pre>
 			{:else if message && message !== unexposed_error_message}
