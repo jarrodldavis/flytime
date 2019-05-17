@@ -5,7 +5,7 @@ module.exports = {
 	},
 	extends: ['eslint:recommended', 'problems/node10', 'prettier'],
 	parserOptions: {
-		ecmaVersion: 2018,
+		ecmaVersion: 2019,
 		sourceType: 'module'
 	},
 	rules: {

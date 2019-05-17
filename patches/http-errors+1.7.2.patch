@@ -1,0 +1,13 @@
+diff --git a/node_modules/http-errors/index.js b/node_modules/http-errors/index.js
+index 10ca4ad..1d069f1 100644
+--- a/node_modules/http-errors/index.js
++++ b/node_modules/http-errors/index.js
+@@ -55,7 +55,7 @@ function createError () {
+     var arg = arguments[i]
+     if (arg instanceof Error) {
+       err = arg
+-      status = err.status || err.statusCode || status
++      status = err.status || err.statusCode || err.code || status
+       continue
+     }
+     switch (typeof arg) {

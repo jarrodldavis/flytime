@@ -1,38 +1,33 @@
 import { promisify } from 'util';
+import { createServer } from 'http';
 import os from 'os';
-import express from 'express';
-import express_pino from 'express-pino-logger';
+import polka from 'polka';
+import { json, urlencoded } from '@polka/parse';
+import pino_http from 'pino-http';
 import sirv from 'sirv';
-import compression from 'compression';
 import * as sapper from '@sapper/server';
 
-import { slack_middleware, slack_client } from './slack';
-import { session_middleware, get_client_session_data } from './session';
-import { redis_client } from './redis';
 import { is_development } from './common';
-import { logger, GRACEFUL_SHUTDOWN, PORT } from './environment';
+import { logger, GRACEFUL_SHUTDOWN, PORT } from './server/environment';
+import { session_middleware, get_client_session_data } from './server/session';
+import { redis_client } from './server/external-services';
+import { Request } from './server/request';
+import { Response } from './server/response';
+import { negotiate_content } from './server/content-negotiation';
+import { error_handler } from './server/error-handler';
 
 logger.info('Starting up...');
 
-function provide_request_id(req, _res, next) {
-	req.id = req.id || req.header('x-request-id');
-	next();
-}
-
-function provide_slack_client(req, _res, next) {
-	req.slack_client = slack_client;
-	next();
-}
-
-const server = express()
-	.set('trust proxy', true)
+const app = polka({
+	server: createServer({ IncomingMessage: Request, ServerResponse: Response }),
+	onError: error_handler
+})
 	.use(
-		provide_request_id,
-		express_pino({ logger }),
-		slack_middleware,
-		compression({ threshold: 0 }),
+		pino_http({ logger }),
+		negotiate_content,
+		json(),
+		urlencoded(),
 		sirv('static', { dev: is_development }),
-		provide_slack_client,
 		session_middleware,
 		sapper.middleware({ session: get_client_session_data })
 	)
@@ -44,7 +39,7 @@ const server = express()
 		}
 	});
 
-const close_server = promisify(server.close).bind(server);
+const close_server = promisify(app.server.close).bind(app.server);
 const quit_redis = promisify(redis_client.quit).bind(redis_client);
 
 let shutting_down = false;

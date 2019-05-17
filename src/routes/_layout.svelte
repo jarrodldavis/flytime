@@ -6,7 +6,7 @@
 
 		const error = session.error;
 		if (error) {
-			this.error(error.status || 500, error.message);
+			this.error(error.status, error.message);
 		}
 	}
 </script>

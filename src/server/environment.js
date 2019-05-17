@@ -1,6 +1,6 @@
 import pino from 'pino';
 
-import { is_development } from './common';
+import { is_development } from '../common';
 
 // logger
 export const logger = pino({
@@ -23,7 +23,7 @@ const unhandled_handler = pino.final(logger, (error, logger) => {
 	// It's only safe to do sync cleanup in unhandled error handlers
 	// Since all graceful shutdown logic is async, just terminate
 	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
-	process.exitCode = 1;
+	process.exit(1);
 });
 
 process.on('unhandledRejection', unhandled_handler);
@@ -55,29 +55,33 @@ const { PORT } = environment;
 
 export { PORT };
 
+// environment variables: Webhook Payload Signing
+const { SLACK_SIGNING_SECRET } = environment;
+
+export { SLACK_SIGNING_SECRET };
+
+export const SLACK_SIGNING_RANDOM_KEY_SIZE = parseInt(
+	environment.SLACK_SIGNING_RANDOM_KEY_SIZE,
+	10
+);
+
 // environment variables: OAuth
 const {
-	SLACK_SIGNING_SECRET,
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	SLACK_CLIENT_SECRET
 } = environment;
 
-export {
-	SLACK_SIGNING_SECRET,
-	SLACK_AUTHORIZATION_URL,
-	SLACK_CLIENT_ID,
-	SLACK_CLIENT_SECRET
-};
+export { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID, SLACK_CLIENT_SECRET };
 
 export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
 
 // environment variables: Sessions
-const {
-	REDIS_URL,
-	SESSION_SECRET,
-	MAX_SESSION_ATTEMPTS,
-	COOKIE_NAME
-} = environment;
+const { REDIS_URL, SESSION_SECRET, COOKIE_NAME } = environment;
 
-export { REDIS_URL, SESSION_SECRET, MAX_SESSION_ATTEMPTS, COOKIE_NAME };
+export { REDIS_URL, SESSION_SECRET, COOKIE_NAME };
+
+export const MAX_SESSION_ATTEMPTS = parseInt(
+	environment.MAX_SESSION_ATTEMPTS,
+	10
+);

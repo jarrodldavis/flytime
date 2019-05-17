@@ -4,6 +4,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import svelte from 'rollup-plugin-svelte';
 import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser';
+import acorn_class_fields from 'acorn-class-fields';
 import config from 'sapper/config/rollup.js';
 import pkg from './package.json';
 
@@ -19,6 +20,7 @@ export default {
 		input: config.client.input(),
 		output: { ...config.client.output(), sourcemap: true },
 		watch: { chokidar: true },
+		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
 			replace({
 				'process.browser': true,
@@ -67,6 +69,7 @@ export default {
 		input: config.server.input(),
 		output: { ...config.server.output(), sourcemap: true },
 		watch: { chokidar: true },
+		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
 			replace({
 				'process.browser': false,
@@ -89,6 +92,7 @@ export default {
 		input: config.serviceworker.input(),
 		output: config.serviceworker.output(),
 		watch: { chokidar: true },
+		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
 			resolve({ extensions: resolve_extensions }),
 			replace({
