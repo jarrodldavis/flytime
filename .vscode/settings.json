@@ -14,6 +14,7 @@
 	"javascript.format.enable": false,
 	"typescript.format.enable": false,
 	"prettier.requireConfig": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[svelte]": {
 		"editor.defaultFormatter": "JamesBirtles.svelte-vscode"
 	},
@@ -22,9 +23,13 @@
 	"editor.formatOnSave": true,
 	"editor.detectIndentation": false,
 	"editor.tabSize": 2,
+	"editor.trimAutoWhitespace": true,
 	"editor.insertSpaces": false,
 	"editor.rulers": [80],
 	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimFinalNewlines": true,
+	"files.trimTrailingWhitespace": true,
 	"javascript.preferences.quoteStyle": "single",
 	"typescript.preferences.quoteStyle": "single",
 
@@ -33,10 +38,17 @@
 
 	// ignore npm- and Sapper-generated directores
 	"files.exclude": {
+		"**/.git/**": true,
 		"**/node_modules": true,
 		"**/__sapper__": true
 	},
 	"files.watcherExclude": {
+		"**/.git/**": true,
+		"**/node_modules/**": true,
+		"**/__sapper__/**": true
+	},
+	"search.exclude": {
+		"**/.git/**": true,
 		"**/node_modules/**": true,
 		"**/__sapper__/**": true
 	},
