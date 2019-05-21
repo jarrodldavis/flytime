@@ -1,48 +1,54 @@
 {
-	// disable built-in VS Code formatters
+	// configure linters
+	"eslint.enable": true,
+	"eslint.packageManager": "npm",
+	"eslint.provideLintTask": true,
+	"eslint.validate": ["javascript", "svelte"],
+	"javascript.validate.enable": false,
+	"stylelint.enable": true,
+	"svelte.plugin.typescript.diagnostics.enable": false,
+
+	// configure formatters
 	"html.format.enable": false,
 	"json.format.enable": false,
 	"javascript.format.enable": false,
 	"typescript.format.enable": false,
-
-	// enable and configure linters
-	"javascript.validate.enable": false,
-	"eslint.enable": true,
-	"eslint.packageManager": "npm",
-	"eslint.provideLintTask": true,
-	"stylelint.enable": true,
 	"prettier.requireConfig": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
 	"[svelte]": {
 		"editor.defaultFormatter": "JamesBirtles.svelte-vscode"
 	},
-
-	// npm integration
-	"npm.autoDetect": "on",
-	"npm.enableScriptExplorer": true,
-	"npm.packageManager": "npm",
 
 	// configure editor to match code style
 	"editor.formatOnSave": true,
 	"editor.detectIndentation": false,
 	"editor.tabSize": 2,
+	"editor.trimAutoWhitespace": true,
 	"editor.insertSpaces": false,
 	"editor.rulers": [80],
 	"files.eol": "\n",
+	"files.insertFinalNewline": true,
+	"files.trimFinalNewlines": true,
+	"files.trimTrailingWhitespace": true,
 	"javascript.preferences.quoteStyle": "single",
 	"typescript.preferences.quoteStyle": "single",
 
 	// allow breakpoints in Svelte templates
 	"debug.allowBreakpointsEverywhere": true,
 
-	// enable ESLint in Svelte templates
-	"eslint.validate": ["javascript", "svelte"],
-
 	// ignore npm- and Sapper-generated directores
 	"files.exclude": {
+		"**/.git/**": true,
 		"**/node_modules": true,
 		"**/__sapper__": true
 	},
 	"files.watcherExclude": {
+		"**/.git/**": true,
+		"**/node_modules/**": true,
+		"**/__sapper__/**": true
+	},
+	"search.exclude": {
+		"**/.git/**": true,
 		"**/node_modules/**": true,
 		"**/__sapper__/**": true
 	},
@@ -50,5 +56,10 @@
 	// git commit message settings
 	"git.inputValidation": "always",
 	"git.inputValidationLength": 72,
-	"git.inputValidationSubjectLength": 50
+	"git.inputValidationSubjectLength": 50,
+
+	// npm integration
+	"npm.autoDetect": "on",
+	"npm.enableScriptExplorer": true,
+	"npm.packageManager": "npm"
 }

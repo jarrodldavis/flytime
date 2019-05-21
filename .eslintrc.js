@@ -45,12 +45,6 @@ module.exports = {
 		{
 			files: ['src/service-worker.js'],
 			env: { serviceworker: true }
-		},
-		{
-			files: ['**/*.svelte'],
-			rules: {
-				'no-labels': 'off'
-			}
 		}
 	]
 };

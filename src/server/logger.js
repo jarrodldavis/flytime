@@ -2,7 +2,7 @@ import pino from 'pino';
 import { is_development, name, version } from '../common';
 
 export const logger = pino({
-	prettyPrint: is_development && { translateTime: true },
+	prettyPrint: is_development && { translateTime: true, ignore: 'package' },
 	serializers: { err: pino.stdSerializers.err, error: pino.stdSerializers.err },
 	redact: ['req.headers.cookie', 'res.headers["set-cookie"]'],
 	base: {
