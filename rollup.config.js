@@ -52,6 +52,10 @@ export default {
 
 	server: {
 		input: config.server.input(),
+		manualChunks: {
+			// force into separate chunk to ensure early registration of handlers
+			shutdown: ['src/server/shutdown.js']
+		},
 		output: { ...config.server.output(), sourcemap: true },
 		watch: { chokidar: true },
 		acornInjectPlugins: [acorn_class_fields],

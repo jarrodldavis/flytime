@@ -4,7 +4,7 @@ import { WebClient } from '@slack/web-api';
 
 import { timeout } from '../common';
 import { REDIS_URL, SHUTDOWN_REDIS_TIMEOUT } from './environment';
-import { register_graceful_shutdown } from './helpers';
+import { register_graceful_shutdown } from './shutdown';
 
 export const redis_client = redis.createClient(REDIS_URL);
 
