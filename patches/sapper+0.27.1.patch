@@ -1,0 +1,118 @@
+diff --git a/node_modules/sapper/dist/chunk.js b/node_modules/sapper/dist/chunk.js
+index 870501d..cf97b8c 100644
+--- a/node_modules/sapper/dist/chunk.js
++++ b/node_modules/sapper/dist/chunk.js
+@@ -66,34 +66,34 @@ function check_weird(port) {
+     });
+ }
+ 
+-function find(port) {
++function find(port, host) {
+     return weird().then(function (weird$$1) {
+         if (weird$$1) {
+             return new Promise(function (fulfil) {
+-                get_port_weird(port, fulfil);
++                get_port_weird(port, host, fulfil);
+             });
+         }
+         return new Promise(function (fulfil) {
+-            get_port(port, fulfil);
++            get_port(port, host, fulfil);
+         });
+     });
+ }
+-function get_port(port, cb) {
++function get_port(port, host, cb) {
+     var server = net.createServer();
+     server.unref();
+     server.on('error', function () {
+-        get_port(port + 1, cb);
++        get_port(port + 1, host, cb);
+     });
+-    server.listen({ port: port }, function () {
++    server.listen({ port: port, host: host }, function () {
+         server.close(function () {
+             cb(port);
+         });
+     });
+ }
+-function get_port_weird(port, cb) {
+-    var client = net.createConnection({ port: port }, function () {
++function get_port_weird(port, host, cb) {
++    var client = net.createConnection({ port: port, host: host }, function () {
+         client.end();
+-        get_port(port + 1, cb);
++        get_port(port + 1, host, cb);
+     })
+         .on('error', function () {
+         cb(port);
+diff --git a/node_modules/sapper/dist/core.js b/node_modules/sapper/dist/core.js
+index 05fca74..de55bfb 100644
+--- a/node_modules/sapper/dist/core.js
++++ b/node_modules/sapper/dist/core.js
+@@ -98,8 +98,7 @@ function generate_client_manifest(
+ 	const page_ids = new Set(manifest_data.pages.map(page =>
+ 		page.pattern.toString()));
+ 
+-	const server_routes_to_ignore = manifest_data.server_routes.filter(route =>
+-		!page_ids.has(route.pattern.toString()));
++	const server_routes_to_ignore = [...manifest_data.server_routes];
+ 
+ 	const component_indexes = {};
+ 
+diff --git a/node_modules/sapper/dist/dev.js b/node_modules/sapper/dist/dev.js
+index 8e4a60b..b4a5fef 100644
+--- a/node_modules/sapper/dist/dev.js
++++ b/node_modules/sapper/dist/dev.js
+@@ -148,7 +148,7 @@ class Watcher extends EventEmitter.EventEmitter {
+ 		if (!this.dev_port) this.dev_port = await __chunk_1.find(10000);
+ 
+ 		// Chrome looks for debugging targets on ports 9222 and 9229 by default
+-		if (!this.devtools_port) this.devtools_port = await __chunk_1.find(9222);
++		if (!this.devtools_port) this.devtools_port = await __chunk_1.find(9222, '127.0.0.1');
+ 
+ 		let manifest_data;
+ 
+diff --git a/node_modules/sapper/runtime/server.mjs b/node_modules/sapper/runtime/server.mjs
+index 3a10368..38364f4 100644
+--- a/node_modules/sapper/runtime/server.mjs
++++ b/node_modules/sapper/runtime/server.mjs
+@@ -52,12 +52,7 @@ function get_server_route_handler(routes) {
+ 			}
+ 
+ 			const handle_next = (err) => {
+-				if (err) {
+-					res.statusCode = 500;
+-					res.end(err.message);
+-				} else {
+-					process.nextTick(next);
+-				}
++				process.nextTick(next, err);
+ 			};
+ 
+ 			try {
+@@ -2263,7 +2258,8 @@ function get_page_handler(
+ 				? manifest.root_preload.call(preload_context, {
+ 					path: req.path,
+ 					query: req.query,
+-					params: {}
++					params: {},
++					error
+ 				}, session)
+ 				: {};
+ 
+@@ -2578,7 +2574,13 @@ function compose_handlers(ignore, handlers) {
+ 			return next();
+ 		}
+ 
+-		handlers[n](req, res, () => nth_handler(n+1, req, res, next));
++		handlers[n](req, res, (err) => {
++			if (err) {
++				return next(err);
++			}
++
++			nth_handler(n+1, req, res, next);
++		});
+ 	}
+ 
+ 	return !ignore

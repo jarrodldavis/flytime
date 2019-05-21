@@ -1,0 +1,36 @@
+diff --git a/node_modules/prettier-plugin-svelte/plugin.js b/node_modules/prettier-plugin-svelte/plugin.js
+index 7fb9cae..01b02af 100644
+--- a/node_modules/prettier-plugin-svelte/plugin.js
++++ b/node_modules/prettier-plugin-svelte/plugin.js
+@@ -343,7 +343,14 @@ function trimLeft(group) {
+         return;
+     }
+     const first = group[0];
+-    if (typeof first === 'string' || first.type !== 'fill') {
++    if (typeof first === 'string') {
++        return;
++    }
++    if (first.type === 'line') {
++        group.shift();
++        return;
++    }
++    if (first.type !== 'fill') {
+         return;
+     }
+     // find the index of the first part that isn't an empty string or a line
+@@ -362,7 +369,14 @@ function trimRight(group) {
+         return;
+     }
+     const last = group[group.length - 1];
+-    if (typeof last === 'string' || last.type !== 'fill') {
++    if (typeof last === 'string') {
++        return;
++    }
++    if (last.type === 'line') {
++        group.pop();
++        return;
++    }
++    if (last.type !== 'fill') {
+         return;
+     }
+     last.parts.reverse();
