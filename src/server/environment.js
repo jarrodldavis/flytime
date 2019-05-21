@@ -1,87 +1,75 @@
-import pino from 'pino';
+// helpers
+function create_handler(transform) {
+	return {
+		get(target, property, receiver) {
+			const value = Reflect.get(target, property, receiver);
+			if (value === undefined) {
+				throw new Error(`Environment variable '${property}' is not defined`);
+			}
 
-import { is_development } from '../common';
+			const transformed = transform(value);
+			if (transformed === null) {
+				throw new Error(`Environment variable '${property}' is invalid`);
+			}
 
-// logger
-export const logger = pino({
-	prettyPrint: is_development && { translateTime: true },
-	serializers: { err: pino.stdSerializers.err, error: pino.stdSerializers.err },
-	redact: ['req.headers.cookie', 'res.headers["set-cookie"]']
-});
-
-// lifecycle management
-export const GRACEFUL_SHUTDOWN = Symbol('graceful shutdown');
-
-const signal_handler = pino.final(logger, (signal, logger) => {
-	process.emit(GRACEFUL_SHUTDOWN, logger, signal);
-});
-
-process.on('SIGTERM', signal_handler);
-process.on('SIGINT', signal_handler);
-
-const unhandled_handler = pino.final(logger, (error, logger) => {
-	// It's only safe to do sync cleanup in unhandled error handlers
-	// Since all graceful shutdown logic is async, just terminate
-	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
-	process.exit(1);
-});
-
-process.on('unhandledRejection', unhandled_handler);
-process.on('uncaughtException', unhandled_handler);
-
-process.on(
-	'exit',
-	pino.final(logger, (exit_code, logger) => {
-		logger.info({ exit_code }, 'Exiting with code %s', exit_code);
-	})
-);
-
-// environment variables
-function get(target, prop, receiver) {
-	const value = Reflect.get(target, prop, receiver);
-
-	if (value === undefined || value === '') {
-		throw new Error(`Environment variable '${prop}' is not defined`);
-	}
-
-	return value;
+			return transformed;
+		}
+	};
 }
 
-// eslint-disable-next-line no-process-env
-const environment = new Proxy(process.env, { get });
+function parse_string(value) {
+	const parsed = value.trim();
+	if (parsed.trim() === '') {
+		return null;
+	}
 
-// environment variables: HTTP
-const { PORT } = environment;
+	return parsed;
+}
 
+function parse_integer(value) {
+	const parsed = parseInt(value, 10);
+	if (isNaN(parsed) || parsed.toString() !== value) {
+		return null;
+	}
+
+	return parsed;
+}
+
+/* eslint-disable no-process-env */
+const strings = new Proxy(process.env, create_handler(parse_string));
+const integers = new Proxy(process.env, create_handler(parse_integer));
+/* eslint-enable no-process-env */
+
+// HTTP
+const { PORT } = integers;
 export { PORT };
 
-// environment variables: Webhook Payload Signing
-const { SLACK_SIGNING_SECRET } = environment;
+// Shutdown
+const { SHUTDOWN_SERVER_TIMEOUT, SHUTDOWN_REDIS_TIMEOUT } = integers;
+export { SHUTDOWN_SERVER_TIMEOUT, SHUTDOWN_REDIS_TIMEOUT };
 
-export { SLACK_SIGNING_SECRET };
+// Webhook Payload Signing
+const { SLACK_SIGNING_SECRET } = strings;
+const { SLACK_SIGNING_RANDOM_KEY_SIZE } = integers;
+export { SLACK_SIGNING_SECRET, SLACK_SIGNING_RANDOM_KEY_SIZE };
 
-export const SLACK_SIGNING_RANDOM_KEY_SIZE = parseInt(
-	environment.SLACK_SIGNING_RANDOM_KEY_SIZE,
-	10
-);
-
-// environment variables: OAuth
+// OAuth
 const {
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	SLACK_CLIENT_SECRET
-} = environment;
+} = strings;
 
-export { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID, SLACK_CLIENT_SECRET };
+const { OAUTH_STATE_SIZE } = integers;
 
-export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
+export {
+	SLACK_AUTHORIZATION_URL,
+	SLACK_CLIENT_ID,
+	SLACK_CLIENT_SECRET,
+	OAUTH_STATE_SIZE
+};
 
-// environment variables: Sessions
-const { REDIS_URL, SESSION_SECRET, COOKIE_NAME } = environment;
-
-export { REDIS_URL, SESSION_SECRET, COOKIE_NAME };
-
-export const MAX_SESSION_ATTEMPTS = parseInt(
-	environment.MAX_SESSION_ATTEMPTS,
-	10
-);
+// Sessions
+const { REDIS_URL, SESSION_SECRET, COOKIE_NAME } = strings;
+const { MAX_SESSION_ATTEMPTS } = integers;
+export { REDIS_URL, SESSION_SECRET, COOKIE_NAME, MAX_SESSION_ATTEMPTS };

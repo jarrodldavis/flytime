@@ -20,6 +20,11 @@ module.exports = {
 				selector:
 					'MemberExpression[object.name="process"][property.name="browser"]',
 				message: 'Unexpected use of process.browser.'
+			},
+			{
+				selector:
+					'MemberExpression[object.name="process"][property.name="package"]',
+				message: 'Unexpected use of process.package.'
 			}
 		]
 	},
