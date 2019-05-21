@@ -1,7 +1,14 @@
 import pino from 'pino';
 
 import { is_development } from '../common';
-import { create_proxy_handler, parse_string, parse_integer } from './helpers';
+import {
+	signal_handler,
+	unhandled_handler,
+	exit_handler,
+	create_proxy_handler,
+	parse_string,
+	parse_integer
+} from './helpers';
 
 // logger
 export const logger = pino({
@@ -11,31 +18,13 @@ export const logger = pino({
 });
 
 // lifecycle management
-export const GRACEFUL_SHUTDOWN = Symbol('graceful shutdown');
-
-const signal_handler = pino.final(logger, (signal, logger) => {
-	process.emit(GRACEFUL_SHUTDOWN, logger, signal);
-});
-
-process.on('SIGTERM', signal_handler);
-process.on('SIGINT', signal_handler);
-
-const unhandled_handler = pino.final(logger, (error, logger) => {
-	// It's only safe to do sync cleanup in unhandled error handlers
-	// Since all graceful shutdown logic is async, just terminate
-	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
-	process.exit(1);
-});
-
-process.on('unhandledRejection', unhandled_handler);
-process.on('uncaughtException', unhandled_handler);
-
-process.on(
-	'exit',
-	pino.final(logger, (exit_code, logger) => {
-		logger.info({ exit_code }, 'Exiting with code %s', exit_code);
-	})
-);
+// registration is located here to ensure they are registered early
+// otherwise, bundling may put other logic before these handlers
+process.on('SIGTERM', pino.final(logger, signal_handler));
+process.on('SIGINT', pino.final(logger, signal_handler));
+process.on('unhandledRejection', pino.final(logger, unhandled_handler));
+process.on('uncaughtException', pino.final(logger, unhandled_handler));
+process.on('exit', pino.final(logger, exit_handler));
 
 // environment variables
 /* eslint-disable no-process-env */
@@ -46,6 +35,10 @@ const integers = new Proxy(process.env, create_proxy_handler(parse_integer));
 // environment variables: HTTP
 const { PORT } = integers;
 export { PORT };
+
+// environment variables: Shutdown
+const { SHUTDOWN_SERVER_TIMEOUT, SHUTDOWN_REDIS_TIMEOUT } = integers;
+export { SHUTDOWN_SERVER_TIMEOUT, SHUTDOWN_REDIS_TIMEOUT };
 
 // environment variables: Webhook Payload Signing
 const { SLACK_SIGNING_SECRET } = strings;

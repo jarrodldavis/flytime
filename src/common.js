@@ -8,3 +8,12 @@ export const is_browser = process.browser;
 /* eslint-enable no-process-env, no-restricted-syntax */
 
 export const unexposed_error_message = 'Application Error';
+
+export function timeout(timeout) {
+	return new Promise((_, reject) => {
+		setTimeout(
+			() => reject(new Error(`Timeout reached after ${timeout} milliseconds`)),
+			timeout
+		).unref();
+	});
+}

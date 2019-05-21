@@ -1,3 +1,6 @@
+import os from 'os';
+
+// environment variables
 export function create_proxy_handler(transform) {
 	return {
 		get(target, property, receiver) {
@@ -32,4 +35,50 @@ export function parse_integer(value) {
 	}
 
 	return parsed;
+}
+
+// shutdown
+const handlers = [];
+export function register_graceful_shutdown(handler) {
+	handlers.push(handler);
+}
+
+let shutting_down = false;
+export async function signal_handler(signal, logger) {
+	logger.info({ signal }, `Received ${signal}`);
+
+	if (shutting_down) {
+		logger.warn('Already shutting down, ignoring signal');
+		return;
+	}
+
+	shutting_down = true;
+
+	for (const handler of handlers.reverse()) {
+		await handler(logger);
+	}
+
+	logger.info('Completed shutdown');
+	let exit_code = 1;
+	if (signal) {
+		const signal_code = os.constants.signals[signal];
+		if (signal_code) {
+			// replicate node's default exit code behavior for signals
+			exit_code = 128 + signal_code;
+		}
+	}
+
+	process.exit(exit_code);
+}
+
+export function unhandled_handler(error, logger) {
+	// It's only safe to do sync cleanup in unhandled error handlers
+	// Since all graceful shutdown logic is async, just terminate
+	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
+	process.exit(1);
+}
+
+export function exit_handler(exit_code, logger) {
+	const level = exit_code === 0 ? 'info' : 'warn';
+	logger[level]({ exit_code }, 'Exiting with code %s', exit_code);
 }
