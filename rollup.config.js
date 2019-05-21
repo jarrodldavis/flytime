@@ -6,14 +6,18 @@ import babel from 'rollup-plugin-babel';
 import { terser } from 'rollup-plugin-terser';
 import acorn_class_fields from 'acorn-class-fields';
 import config from 'sapper/config/rollup.js';
-import pkg from './package.json';
+
+import { builtinModules } from 'module';
+import { dependencies } from './package.json';
 
 /* eslint-disable no-process-env */
 const mode = process.env.NODE_ENV;
-const dev = mode === 'development';
 const legacy = !!process.env.SAPPER_LEGACY_BUILD;
-const resolve_extensions = ['.mjs', '.js', '.json', '.node', '.svelte'];
 /* eslint-enable no-process-env */
+
+const dev = mode === 'development';
+const extensions = ['.mjs', '.js', '.svelte'];
+const resolve_extensions = [...extensions, '.json', '.node'];
 
 export default {
 	client: {
@@ -26,42 +30,23 @@ export default {
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
-			svelte({
-				dev,
-				hydratable: true,
-				emitCss: true
-			}),
+			svelte({ dev, hydratable: true, emitCss: true }),
 			resolve({ extensions: resolve_extensions }),
 			commonjs(),
 
 			legacy &&
 				babel({
-					extensions: ['.js', '.mjs', '.html', '.svelte'],
+					extensions,
 					runtimeHelpers: true,
 					exclude: ['node_modules/@babel/**'],
-					presets: [
-						[
-							'@babel/preset-env',
-							{
-								targets: '> 0.25%, not dead'
-							}
-						]
-					],
+					presets: [['@babel/preset-env', { targets: '> 0.25%, not dead' }]],
 					plugins: [
 						'@babel/plugin-syntax-dynamic-import',
-						[
-							'@babel/plugin-transform-runtime',
-							{
-								useESModules: true
-							}
-						]
+						['@babel/plugin-transform-runtime', { useESModules: true }]
 					]
 				}),
 
-			!dev &&
-				terser({
-					module: true
-				})
+			!dev && terser({ module: true })
 		]
 	},
 
@@ -75,17 +60,11 @@ export default {
 				'process.browser': false,
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
-			svelte({
-				generate: 'ssr',
-				dev
-			}),
+			svelte({ generate: 'ssr', dev }),
 			resolve({ extensions: resolve_extensions }),
 			commonjs()
 		],
-		external: Object.keys(pkg.dependencies).concat(
-			require('module').builtinModules ||
-				Object.keys(process.binding('natives'))
-		)
+		external: [...Object.keys(dependencies), ...builtinModules]
 	},
 
 	serviceworker: {
@@ -94,11 +73,11 @@ export default {
 		watch: { chokidar: true },
 		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
-			resolve({ extensions: resolve_extensions }),
 			replace({
 				'process.browser': true,
 				'process.env.NODE_ENV': JSON.stringify(mode)
 			}),
+			resolve({ extensions: resolve_extensions }),
 			commonjs(),
 			!dev && terser()
 		]
