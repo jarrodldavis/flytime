@@ -1,8 +1,43 @@
-import { create_proxy_handler, parse_string, parse_integer } from './helpers';
+// helpers
+function create_handler(transform) {
+	return {
+		get(target, property, receiver) {
+			const value = Reflect.get(target, property, receiver);
+			if (value === undefined) {
+				throw new Error(`Environment variable '${property}' is not defined`);
+			}
+
+			const transformed = transform(value);
+			if (transformed === null) {
+				throw new Error(`Environment variable '${property}' is invalid`);
+			}
+
+			return transformed;
+		}
+	};
+}
+
+function parse_string(value) {
+	const parsed = value.trim();
+	if (parsed.trim() === '') {
+		return null;
+	}
+
+	return parsed;
+}
+
+function parse_integer(value) {
+	const parsed = parseInt(value, 10);
+	if (isNaN(parsed) || parsed.toString() !== value) {
+		return null;
+	}
+
+	return parsed;
+}
 
 /* eslint-disable no-process-env */
-const strings = new Proxy(process.env, create_proxy_handler(parse_string));
-const integers = new Proxy(process.env, create_proxy_handler(parse_integer));
+const strings = new Proxy(process.env, create_handler(parse_string));
+const integers = new Proxy(process.env, create_handler(parse_integer));
 /* eslint-enable no-process-env */
 
 // HTTP
