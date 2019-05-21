@@ -1,6 +1,7 @@
 import pino from 'pino';
 
 import { is_development } from '../common';
+import { create_proxy_handler, parse_string, parse_integer } from './helpers';
 
 // logger
 export const logger = pino({
@@ -37,51 +38,37 @@ process.on(
 );
 
 // environment variables
-function get(target, prop, receiver) {
-	const value = Reflect.get(target, prop, receiver);
-
-	if (value === undefined || value === '') {
-		throw new Error(`Environment variable '${prop}' is not defined`);
-	}
-
-	return value;
-}
-
-// eslint-disable-next-line no-process-env
-const environment = new Proxy(process.env, { get });
+/* eslint-disable no-process-env */
+const strings = new Proxy(process.env, create_proxy_handler(parse_string));
+const integers = new Proxy(process.env, create_proxy_handler(parse_integer));
+/* eslint-enable no-process-env */
 
 // environment variables: HTTP
-const { PORT } = environment;
-
+const { PORT } = integers;
 export { PORT };
 
 // environment variables: Webhook Payload Signing
-const { SLACK_SIGNING_SECRET } = environment;
-
-export { SLACK_SIGNING_SECRET };
-
-export const SLACK_SIGNING_RANDOM_KEY_SIZE = parseInt(
-	environment.SLACK_SIGNING_RANDOM_KEY_SIZE,
-	10
-);
+const { SLACK_SIGNING_SECRET } = strings;
+const { SLACK_SIGNING_RANDOM_KEY_SIZE } = integers;
+export { SLACK_SIGNING_SECRET, SLACK_SIGNING_RANDOM_KEY_SIZE };
 
 // environment variables: OAuth
 const {
 	SLACK_AUTHORIZATION_URL,
 	SLACK_CLIENT_ID,
 	SLACK_CLIENT_SECRET
-} = environment;
+} = strings;
 
-export { SLACK_AUTHORIZATION_URL, SLACK_CLIENT_ID, SLACK_CLIENT_SECRET };
+const { OAUTH_STATE_SIZE } = integers;
 
-export const OAUTH_STATE_SIZE = parseInt(environment.OAUTH_STATE_SIZE, 10);
+export {
+	SLACK_AUTHORIZATION_URL,
+	SLACK_CLIENT_ID,
+	SLACK_CLIENT_SECRET,
+	OAUTH_STATE_SIZE
+};
 
 // environment variables: Sessions
-const { REDIS_URL, SESSION_SECRET, COOKIE_NAME } = environment;
-
-export { REDIS_URL, SESSION_SECRET, COOKIE_NAME };
-
-export const MAX_SESSION_ATTEMPTS = parseInt(
-	environment.MAX_SESSION_ATTEMPTS,
-	10
-);
+const { REDIS_URL, SESSION_SECRET, COOKIE_NAME } = strings;
+const { MAX_SESSION_ATTEMPTS } = integers;
+export { REDIS_URL, SESSION_SECRET, COOKIE_NAME, MAX_SESSION_ATTEMPTS };
