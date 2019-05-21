@@ -2,6 +2,11 @@
   "name": "@jarrodldavis/flytime",
   "description": "Distributed team timezone tracking",
   "version": "0.0.1",
+  "author": "Jarrod Davis <developer@jarrodldavis.com>",
+  "homepage": "https://github.com/jarrodldavis/flytime#readme",
+  "repository": "jarrodldavis/flytime",
+  "license": "MIT",
+  "private": true,
   "scripts": {
     "prepare": "patch-package",
     "dev": "sapper dev",
