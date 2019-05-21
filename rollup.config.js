@@ -8,7 +8,7 @@ import acorn_class_fields from 'acorn-class-fields';
 import config from 'sapper/config/rollup.js';
 
 import { builtinModules } from 'module';
-import { dependencies } from './package.json';
+import { name, version, dependencies } from './package.json';
 
 /* eslint-disable no-process-env */
 const mode = process.env.NODE_ENV;
@@ -19,6 +19,12 @@ const dev = mode === 'development';
 const extensions = ['.mjs', '.js', '.svelte'];
 const resolve_extensions = [...extensions, '.json', '.node'];
 
+const replacements = {
+	'process.env.NODE_ENV': JSON.stringify(mode),
+	'process.package.name': JSON.stringify(name),
+	'process.package.version': JSON.stringify(version)
+};
+
 export default {
 	client: {
 		input: config.client.input(),
@@ -26,10 +32,7 @@ export default {
 		watch: { chokidar: true },
 		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
-			replace({
-				'process.browser': true,
-				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
+			replace({ ...replacements, 'process.browser': true }),
 			svelte({ dev, hydratable: true, emitCss: true }),
 			resolve({ extensions: resolve_extensions }),
 			commonjs(),
@@ -60,10 +63,7 @@ export default {
 		watch: { chokidar: true },
 		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
-			replace({
-				'process.browser': false,
-				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
+			replace({ ...replacements, 'process.browser': false }),
 			svelte({ generate: 'ssr', dev }),
 			resolve({ extensions: resolve_extensions }),
 			commonjs()
@@ -77,10 +77,7 @@ export default {
 		watch: { chokidar: true },
 		acornInjectPlugins: [acorn_class_fields],
 		plugins: [
-			replace({
-				'process.browser': true,
-				'process.env.NODE_ENV': JSON.stringify(mode)
-			}),
+			replace({ ...replacements, 'process.browser': true }),
 			resolve({ extensions: resolve_extensions }),
 			commonjs(),
 			!dev && terser()

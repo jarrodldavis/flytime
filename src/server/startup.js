@@ -20,7 +20,7 @@ const app = polka({
 	server: createServer({ IncomingMessage: Request, ServerResponse: Response }),
 	onError: error_handler
 }).use(
-	pino_http({ logger }),
+	pino_http({ logger, name: 'http' }),
 	negotiate_content,
 	json(),
 	urlencoded(),
