@@ -10,10 +10,11 @@ import {
 	DATABASE_URL,
 	DATABASE_CONNECT_TIMEOUT,
 	DATABASE_STATEMENT_TIMEOUT,
+	DATABASE_CLIENT_ID_SIZE,
 	SHUTDOWN_DATABASE_TIMEOUT
 } from './environment';
 import { register_graceful_shutdown } from './shutdown';
-import { SlackPinoLogger } from './logger';
+import { SlackPinoLogger, PostgresLogger } from './logger';
 
 export const redis_client = redis.createClient(REDIS_URL);
 
@@ -40,6 +41,8 @@ register_graceful_shutdown(async logger => {
 		logger.error({ error }, 'Failed to quit Redis connection');
 	}
 });
+
+PostgresLogger.listen(postgres_pool, DATABASE_CLIENT_ID_SIZE);
 
 register_graceful_shutdown(async logger => {
 	logger.info('Ending Postgres pool...');
