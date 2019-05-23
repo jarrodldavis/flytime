@@ -1,0 +1,13 @@
+diff --git a/node_modules/postguard/dist/babel/parse-query.js b/node_modules/postguard/dist/babel/parse-query.js
+index ab8b8a8..353f4f2 100644
+--- a/node_modules/postguard/dist/babel/parse-query.js
++++ b/node_modules/postguard/dist/babel/parse-query.js
+@@ -35,7 +35,7 @@ function resolveSpreadArgumentType(expression, tsProgram, tsSource) {
+ }
+ function resolveSpreadExpressionType(expression, sourceFile) {
+     if (!sourceFile.ts)
+-        return parse_pg_query_1.spreadTypeAny;
++        return null;
+     if (isSpreadCallExpression(expression, "spreadInsert") ||
+         isSpreadCallExpression(expression, "spreadUpdate")) {
+         const spreadArgType = resolveSpreadArgumentType(expression, sourceFile.ts.program, sourceFile.ts.sourceFile);

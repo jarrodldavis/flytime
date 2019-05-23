@@ -1,3 +1,5 @@
+const restrictions = require('./.eslintrc.restrictions');
+
 module.exports = {
 	root: true,
 	plugins: ['svelte3'], // replace with @jarrodldavis/svelte once released
@@ -14,19 +16,7 @@ module.exports = {
 	},
 	rules: {
 		'no-process-env': 'error',
-		'no-restricted-syntax': [
-			'error',
-			{
-				selector:
-					'MemberExpression[object.name="process"][property.name="browser"]',
-				message: 'Unexpected use of process.browser.'
-			},
-			{
-				selector:
-					'MemberExpression[object.name="process"][property.name="package"]',
-				message: 'Unexpected use of process.package.'
-			}
-		]
+		'no-restricted-syntax': restrictions.all()
 	},
 	overrides: [
 		{
@@ -45,6 +35,18 @@ module.exports = {
 		{
 			files: ['src/service-worker.js'],
 			env: { serviceworker: true }
+		},
+		{
+			files: ['src/server/external-services.js'],
+			rules: {
+				'no-restricted-syntax': restrictions.except('pg', 'pool')
+			}
+		},
+		{
+			files: ['src/server/queries/**/*.js'],
+			rules: {
+				'no-restricted-syntax': restrictions.except('pool', 'squid')
+			}
 		}
 	]
 };
