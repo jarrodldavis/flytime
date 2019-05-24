@@ -9,6 +9,14 @@ export const information_schema_columns = defineTable('columns', {
 	data_type: Schema.String
 });
 
+export const migrations = defineTable('migrations', {
+	id: Schema.Number,
+	name: Schema.String,
+	up_sha256: Schema.String,
+	down_sha256: Schema.String,
+	applied: Schema.Date
+});
+
 export const test_table = defineTable('test_table', {
 	id: Schema.default(Schema.String),
 	message: Schema.String,
