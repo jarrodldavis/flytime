@@ -90,7 +90,7 @@ export class PostgresLogger {
 			case 'INFO':
 				return 'info';
 			case 'NOTICE':
-				return 'warn';
+				return 'info';
 			case 'WARNING':
 				return 'warn';
 			case 'EXCEPTION':

@@ -116,7 +116,7 @@ async function apply_pending_migrations(applied_migrations, defined) {
 			await client.query(sql`COMMIT;`);
 		} catch (error) {
 			await client.query(sql`ROLLBACK;`);
-			logger.fatal({ error }, 'Failed to perform migration');
+			logger.fatal({ migration, error }, 'Failed to perform migration');
 			throw error;
 		} finally {
 			client.release();
@@ -127,7 +127,7 @@ async function apply_pending_migrations(applied_migrations, defined) {
 }
 
 export async function perform_migrations() {
-	logger.info('Validating and apply migrations...');
+	logger.info('Validating and applying migrations...');
 	const defined = get_defined_migrations();
 	await ensure_migrations_table();
 	const applied = await get_applied_migrations();

@@ -10,8 +10,6 @@ import {
 
 const logger = pino.final(get_logger('shutdown'));
 
-logger.info('Registering shutdown handlers...');
-
 const handlers = [];
 export function register_graceful_shutdown(handler) {
 	if (!handler.name) {
@@ -68,9 +66,9 @@ function unhandled_handler(error) {
 
 function exit_handler(exit_code) {
 	if (exit_code > EXIT_CODE_SUCCESS && exit_code < EXIT_CODE_SIGNAL_MINIMUM) {
-		logger.warn({ exit_code }, 'Exiting with code %s', exit_code);
+		logger.warn({ exit_code }, 'Exiting with code', exit_code);
 	} else {
-		logger.info({ exit_code }, 'Exiting with code %s', exit_code);
+		logger.info({ exit_code }, 'Exiting with code', exit_code);
 	}
 }
 
@@ -80,4 +78,6 @@ process.on('unhandledRejection', unhandled_handler);
 process.on('uncaughtException', unhandled_handler);
 process.on('exit', exit_handler);
 
-logger.info('Shutdown handlers successfully registered');
+logger.info(
+	'Process listeners registered for graceful and ungraceful shutdowns'
+);
