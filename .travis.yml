@@ -7,6 +7,10 @@ addons:
     packages:
       - libgconf-2-4 # for Cypress
       - postgresql-11
+cache:
+  npm: true
+  directories:
+    - ~/.cache # for Cypress
 before_script:
   - sudo systemctl start postgresql
   - psql -c 'create database flytime_ci;' -U postgres
