@@ -16,9 +16,3 @@ export const migrations = defineTable('migrations', {
 	down_sha256: Schema.String,
 	applied: Schema.Date
 });
-
-export const test_table = defineTable('test_table', {
-	id: Schema.default(Schema.String),
-	message: Schema.String,
-	cool: Schema.nullable(Schema.String)
-});
