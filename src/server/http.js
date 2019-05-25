@@ -7,14 +7,16 @@ import sirv from 'sirv';
 import * as sapper from '@sapper/server';
 
 import { is_development, timeout } from '../common';
-import { PORT, SHUTDOWN_SERVER_TIMEOUT } from './environment';
-import { logger } from './logger';
+import { PORT as port, SHUTDOWN_SERVER_TIMEOUT } from './environment';
+import { get_logger } from './logger';
 import { register_graceful_shutdown } from './shutdown';
 import { session_middleware, get_client_session_data } from './session';
 import { Request } from './request';
 import { Response } from './response';
 import { negotiate_content } from './content-negotiation';
 import { error_handler } from './error-handler';
+
+const logger = get_logger('http');
 
 const app = polka({
 	server: createServer({ IncomingMessage: Request, ServerResponse: Response }),
@@ -30,8 +32,14 @@ const app = polka({
 );
 
 const close_server = promisify(app.server.close).bind(app.server);
-register_graceful_shutdown(async logger => {
+register_graceful_shutdown(async function http(logger) {
 	logger.info('Closing HTTP server...');
+
+	if (!app.server.listening) {
+		logger.warn('HTTP server is not listening for connections');
+		return;
+	}
+
 	try {
 		await Promise.race([close_server(), timeout(SHUTDOWN_SERVER_TIMEOUT)]);
 		logger.info('Successfully closed HTTP server');
@@ -40,13 +48,14 @@ register_graceful_shutdown(async logger => {
 	}
 });
 
-export function start() {
+export async function start_http() {
 	logger.info('Starting HTTP server...');
-	app.listen(PORT, error => {
-		if (error) {
-			logger.fatal({ error }, 'Error starting HTTP server');
-		} else {
-			logger.info(`HTTP server started and listening on port ${PORT}`);
-		}
+
+	await new Promise((resolve, reject) => {
+		app.server.once('listening', resolve);
+		app.server.once('error', reject);
+		app.listen(port);
 	});
+
+	logger.info({ port }, 'HTTP server started and listening on port', port);
 }

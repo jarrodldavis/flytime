@@ -1,12 +1,20 @@
-import './server/shutdown'; // register handlers early
-import { start as start_http } from './server/startup';
-import { validate } from './server/queries/validate-models';
+import { shutdown_gracefully } from './server/shutdown'; // register handlers early
+import { get_logger } from './server/logger';
 import { perform_migrations } from './server/queries/perform-migrations';
+import { validate_models } from './server/queries/validate-models';
+import { start_http } from './server/http';
+
+const logger = get_logger('startup');
 
 async function start() {
-	await perform_migrations();
-	await validate();
-	start_http();
+	try {
+		await perform_migrations();
+		await validate_models();
+		await start_http();
+	} catch (error) {
+		logger.fatal({ error }, 'Failed to start server');
+		await shutdown_gracefully();
+	}
 }
 
 start();

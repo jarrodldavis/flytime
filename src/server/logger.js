@@ -1,8 +1,9 @@
 import pino from 'pino';
 import { sync as uid } from 'uid-safe';
 import { is_development, name, version } from '../common';
+import { EXIT_CODE_LOGGER_ERROR } from './exit-codes';
 
-export const logger = pino({
+const logger = pino({
 	prettyPrint: is_development && { translateTime: true, ignore: 'package' },
 	serializers: { err: pino.stdSerializers.err, error: pino.stdSerializers.err },
 	redact: ['req.headers.cookie', 'res.headers["set-cookie"]'],
@@ -16,14 +17,17 @@ try {
 	// `pino` validates the level name so additional validation isn't needed
 	logger.level = process.env.LOG_LEVEL; // eslint-disable-line no-process-env
 } catch (error) {
-	const exit_code = 2;
 	pino
 		.final(logger)
 		.fatal(
-			{ error, exit_code },
+			{ error, exit_code: EXIT_CODE_LOGGER_ERROR },
 			'Immediately terminating due to failure to set log level'
 		);
-	process.exit(exit_code);
+	process.exit(EXIT_CODE_LOGGER_ERROR);
+}
+
+export function get_logger(name) {
+	return logger.child({ name });
 }
 
 logger.info('Logger created and ready for use');
@@ -86,7 +90,7 @@ export class PostgresLogger {
 			case 'INFO':
 				return 'info';
 			case 'NOTICE':
-				return 'warn';
+				return 'info';
 			case 'WARNING':
 				return 'warn';
 			case 'EXCEPTION':
