@@ -32,7 +32,7 @@ export const slack_client = new WebClient(undefined, {
 addAppMetadata({ name, version });
 
 const quit_redis = promisify(redis_client.quit).bind(redis_client);
-register_graceful_shutdown(async logger => {
+register_graceful_shutdown(async function redis(logger) {
 	logger.info('Quitting Redis connection...');
 	try {
 		await Promise.race([quit_redis(), timeout(SHUTDOWN_REDIS_TIMEOUT)]);
@@ -44,7 +44,7 @@ register_graceful_shutdown(async logger => {
 
 PostgresLogger.listen(postgres_pool, DATABASE_CLIENT_ID_SIZE);
 
-register_graceful_shutdown(async logger => {
+register_graceful_shutdown(async function postgres(logger) {
 	logger.info('Ending Postgres pool...');
 	try {
 		await Promise.race([

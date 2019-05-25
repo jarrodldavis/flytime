@@ -8,13 +8,15 @@ import * as sapper from '@sapper/server';
 
 import { is_development, timeout } from '../common';
 import { PORT, SHUTDOWN_SERVER_TIMEOUT } from './environment';
-import { logger } from './logger';
+import { get_logger } from './logger';
 import { register_graceful_shutdown } from './shutdown';
 import { session_middleware, get_client_session_data } from './session';
 import { Request } from './request';
 import { Response } from './response';
 import { negotiate_content } from './content-negotiation';
 import { error_handler } from './error-handler';
+
+const logger = get_logger('http');
 
 const app = polka({
 	server: createServer({ IncomingMessage: Request, ServerResponse: Response }),
@@ -30,7 +32,7 @@ const app = polka({
 );
 
 const close_server = promisify(app.server.close).bind(app.server);
-register_graceful_shutdown(async logger => {
+register_graceful_shutdown(async function http(logger) {
 	logger.info('Closing HTTP server...');
 	try {
 		await Promise.race([close_server(), timeout(SHUTDOWN_SERVER_TIMEOUT)]);

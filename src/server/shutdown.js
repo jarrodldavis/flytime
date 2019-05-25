@@ -1,11 +1,17 @@
 import os from 'os';
 import pino from 'pino';
-import { logger } from './logger';
+import { get_logger } from './logger';
+
+const logger = get_logger('shutdown');
 
 logger.info('Registering shutdown handlers...');
 
 const handlers = [];
 export function register_graceful_shutdown(handler) {
+	if (!handler.name) {
+		const message = 'Graceful shutdown handler has no name';
+		logger.warn({ error: new Error(message) }, message);
+	}
 	handlers.push(handler);
 }
 
@@ -21,7 +27,8 @@ async function signal_handler(signal, logger) {
 	shutting_down = true;
 
 	for (const handler of handlers.reverse()) {
-		await handler(logger);
+		const name = `shutdown:${handler.name || 'handler'}`;
+		await handler(logger.child({ name }));
 	}
 
 	logger.info('Completed shutdown');

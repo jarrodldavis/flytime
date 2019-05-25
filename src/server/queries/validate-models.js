@@ -2,7 +2,9 @@ import assert from 'assert';
 import { getAllTableSchemas, sql, ColumnType } from 'squid/pg';
 import { information_schema_columns } from './models'; // add table definitions
 import { postgres_pool } from '../external-services';
-import { logger } from '../logger';
+import { get_logger } from '../logger';
+
+const logger = get_logger('postgres:validate');
 
 function translate_type(database_type) {
 	switch (database_type) {

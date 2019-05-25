@@ -1,10 +1,12 @@
 import assert from 'assert';
 import crypto from 'crypto';
 import { sql } from 'squid/pg';
-import { logger } from '../logger';
+import { get_logger } from '../logger';
 import { postgres_pool } from '../external-services';
 import { DATABASE_MIGRATIONS_LOCK_TIMEOUT } from '../environment';
 import migration_definitionss from './migrations';
+
+const logger = get_logger('postgres:migrations');
 
 function get_defined_migrations() {
 	function sha256_hash(object) {

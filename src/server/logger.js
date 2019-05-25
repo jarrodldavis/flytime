@@ -2,7 +2,7 @@ import pino from 'pino';
 import { sync as uid } from 'uid-safe';
 import { is_development, name, version } from '../common';
 
-export const logger = pino({
+const logger = pino({
 	prettyPrint: is_development && { translateTime: true, ignore: 'package' },
 	serializers: { err: pino.stdSerializers.err, error: pino.stdSerializers.err },
 	redact: ['req.headers.cookie', 'res.headers["set-cookie"]'],
@@ -24,6 +24,10 @@ try {
 			'Immediately terminating due to failure to set log level'
 		);
 	process.exit(exit_code);
+}
+
+export function get_logger(name) {
+	return logger.child({ name });
 }
 
 logger.info('Logger created and ready for use');
