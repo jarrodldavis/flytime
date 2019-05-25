@@ -1,6 +1,15 @@
+dist: xenial
 language: node_js
 node_js:
   - '12.1'
+addons:
+  apt:
+    packages:
+      - libgconf-2-4 # for Cypress
+      - postgresql-11
+before_script:
+  - sudo systemctl start postgresql
+  - psql -c 'create database flytime_ci;' -U postgres
 script:
   - npm run lint
   - npm test
