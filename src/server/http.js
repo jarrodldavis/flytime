@@ -34,6 +34,12 @@ const app = polka({
 const close_server = promisify(app.server.close).bind(app.server);
 register_graceful_shutdown(async function http(logger) {
 	logger.info('Closing HTTP server...');
+
+	if (!app.server.listening) {
+		logger.warn('HTTP server is not listening for connections');
+		return;
+	}
+
 	try {
 		await Promise.race([close_server(), timeout(SHUTDOWN_SERVER_TIMEOUT)]);
 		logger.info('Successfully closed HTTP server');
@@ -42,13 +48,14 @@ register_graceful_shutdown(async function http(logger) {
 	}
 });
 
-export function start_http() {
+export async function start_http() {
 	logger.info('Starting HTTP server...');
-	app.listen(PORT, error => {
-		if (error) {
-			logger.fatal({ error }, 'Error starting HTTP server');
-		} else {
-			logger.info(`HTTP server started and listening on port ${PORT}`);
-		}
+
+	await new Promise((resolve, reject) => {
+		app.server.once('listening', resolve);
+		app.server.once('error', reject);
+		app.listen(PORT);
 	});
+
+	logger.info(`HTTP server started and listening on port ${PORT}`);
 }

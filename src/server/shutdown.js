@@ -16,9 +16,7 @@ export function register_graceful_shutdown(handler) {
 }
 
 let shutting_down = false;
-async function signal_handler(signal, logger) {
-	logger.info({ signal }, `Received ${signal}`);
-
+async function run_shutdown_handlers(exit_code, logger) {
 	if (shutting_down) {
 		logger.warn('Already shutting down, ignoring signal');
 		return;
@@ -32,6 +30,17 @@ async function signal_handler(signal, logger) {
 	}
 
 	logger.info('Completed shutdown');
+	process.exit(exit_code);
+}
+
+export async function shutdown_gracefully(exit_code = 1) {
+	logger.info('Received direct request to shutdown gracefully');
+	await run_shutdown_handlers(exit_code, pino.final(logger));
+}
+
+async function signal_handler(signal, logger) {
+	logger.info({ signal }, `Received ${signal}`);
+
 	let exit_code = 1;
 	if (signal) {
 		const signal_code = os.constants.signals[signal];
@@ -41,7 +50,7 @@ async function signal_handler(signal, logger) {
 		}
 	}
 
-	process.exit(exit_code);
+	await run_shutdown_handlers(exit_code, logger);
 }
 
 function unhandled_handler(error, logger) {
