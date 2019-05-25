@@ -2,7 +2,7 @@ import os from 'os';
 import pino from 'pino';
 import { get_logger } from './logger';
 
-const logger = get_logger('shutdown');
+const logger = pino.final(get_logger('shutdown'));
 
 logger.info('Registering shutdown handlers...');
 
@@ -16,7 +16,7 @@ export function register_graceful_shutdown(handler) {
 }
 
 let shutting_down = false;
-async function run_shutdown_handlers(exit_code, logger) {
+async function run_shutdown_handlers(exit_code) {
 	if (shutting_down) {
 		logger.warn('Already shutting down, ignoring signal');
 		return;
@@ -35,10 +35,10 @@ async function run_shutdown_handlers(exit_code, logger) {
 
 export async function shutdown_gracefully(exit_code = 1) {
 	logger.info('Received direct request to shutdown gracefully');
-	await run_shutdown_handlers(exit_code, pino.final(logger));
+	await run_shutdown_handlers(exit_code);
 }
 
-async function signal_handler(signal, logger) {
+async function signal_handler(signal) {
 	logger.info({ signal }, `Received ${signal}`);
 
 	let exit_code = 1;
@@ -50,25 +50,25 @@ async function signal_handler(signal, logger) {
 		}
 	}
 
-	await run_shutdown_handlers(exit_code, logger);
+	await run_shutdown_handlers(exit_code);
 }
 
-function unhandled_handler(error, logger) {
+function unhandled_handler(error) {
 	// It's only safe to do sync cleanup in unhandled error handlers
 	// Since all graceful shutdown logic is async, just terminate
 	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
 	process.exit(1);
 }
 
-function exit_handler(exit_code, logger) {
+function exit_handler(exit_code) {
 	const level = exit_code === 0 ? 'info' : 'warn';
 	logger[level]({ exit_code }, 'Exiting with code %s', exit_code);
 }
 
-process.on('SIGTERM', pino.final(logger, signal_handler));
-process.on('SIGINT', pino.final(logger, signal_handler));
-process.on('unhandledRejection', pino.final(logger, unhandled_handler));
-process.on('uncaughtException', pino.final(logger, unhandled_handler));
-process.on('exit', pino.final(logger, exit_handler));
+process.on('SIGTERM', signal_handler);
+process.on('SIGINT', signal_handler);
+process.on('unhandledRejection', unhandled_handler);
+process.on('uncaughtException', unhandled_handler);
+process.on('exit', exit_handler);
 
 logger.info('Shutdown handlers successfully registered');
