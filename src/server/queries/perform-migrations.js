@@ -1,9 +1,9 @@
-// TODO: lock_timeout
 import assert from 'assert';
 import crypto from 'crypto';
 import { sql } from 'squid/pg';
 import { logger } from '../logger';
 import { postgres_pool } from '../external-services';
+import { DATABASE_MIGRATIONS_LOCK_TIMEOUT } from '../environment';
 import migration_definitionss from './migrations';
 
 function get_defined_migrations() {
@@ -94,6 +94,11 @@ async function apply_pending_migrations(applied_migrations, defined) {
 		const client = await postgres_pool.connect();
 		await client.query(sql`BEGIN;`);
 		try {
+			// `SET` statements don't support parameterized queries
+			// eslint-disable-next-line no-restricted-syntax
+			await client.query(`
+				SET LOCAL lock_timeout TO ${DATABASE_MIGRATIONS_LOCK_TIMEOUT};
+			`);
 			// eslint-disable-next-line no-restricted-syntax
 			await client.query(migration.up);
 			await client.query(sql`
