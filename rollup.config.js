@@ -66,7 +66,24 @@ export default {
 			replace({ ...replacements, 'process.browser': false }),
 			svelte({ generate: 'ssr', dev }),
 			resolve({ extensions: resolve_extensions }),
-			commonjs()
+			commonjs({
+				namedExports: {
+					'squid/pg': [
+						// schema
+						'ColumnType',
+						'Schema',
+						'defineTable',
+						'getAllTableSchemas',
+
+						// sql
+						'sql',
+						'raw',
+						'spreadAnd',
+						'spreadInsert',
+						'spreadUpdate'
+					]
+				}
+			})
 		],
 		external: [...Object.keys(dependencies), ...builtinModules]
 	},
