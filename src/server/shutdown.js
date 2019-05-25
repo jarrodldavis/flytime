@@ -26,7 +26,7 @@ async function run_shutdown_handlers(exit_code) {
 
 	for (const handler of handlers.reverse()) {
 		const name = `shutdown:${handler.name || 'handler'}`;
-		await handler(logger.child({ name }));
+		await handler(pino.final(logger.child({ name })));
 	}
 
 	logger.info('Completed shutdown');
