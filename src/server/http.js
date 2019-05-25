@@ -42,7 +42,7 @@ register_graceful_shutdown(async function http(logger) {
 	}
 });
 
-export function start() {
+export function start_http() {
 	logger.info('Starting HTTP server...');
 	app.listen(PORT, error => {
 		if (error) {

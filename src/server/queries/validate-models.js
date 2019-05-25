@@ -72,7 +72,7 @@ async function get_database_tables() {
 	return tables;
 }
 
-export async function validate() {
+export async function validate_models() {
 	logger.info('Validating defined model schemas against database tables...');
 
 	const expected_tables = getAllTableSchemas().reduce((tables, table) => {
