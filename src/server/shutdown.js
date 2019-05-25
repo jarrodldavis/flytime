@@ -1,6 +1,12 @@
 import os from 'os';
 import pino from 'pino';
 import { get_logger } from './logger';
+import {
+	EXIT_CODE_OTHER_ERROR,
+	EXIT_CODE_SIGNAL_MINIMUM,
+	EXIT_CODE_UNCAUGHT_ERROR,
+	EXIT_CODE_SUCCESS
+} from './exit-codes';
 
 const logger = pino.final(get_logger('shutdown'));
 
@@ -18,7 +24,7 @@ export function register_graceful_shutdown(handler) {
 let shutting_down = false;
 async function run_shutdown_handlers(exit_code) {
 	if (shutting_down) {
-		logger.warn('Already shutting down, ignoring signal');
+		logger.warn('Already shutting down, ignoring shutdown request');
 		return;
 	}
 
@@ -33,20 +39,20 @@ async function run_shutdown_handlers(exit_code) {
 	process.exit(exit_code);
 }
 
-export async function shutdown_gracefully(exit_code = 1) {
+export async function shutdown_gracefully(exit_code = EXIT_CODE_OTHER_ERROR) {
 	logger.info('Received direct request to shutdown gracefully');
 	await run_shutdown_handlers(exit_code);
 }
 
 async function signal_handler(signal) {
-	logger.info({ signal }, `Received ${signal}`);
+	logger.info({ signal }, `Received ${signal} to shutdown gracefully`);
 
-	let exit_code = 1;
+	// replicate node's default exit code behavior for signals
+	let exit_code = EXIT_CODE_SIGNAL_MINIMUM;
 	if (signal) {
 		const signal_code = os.constants.signals[signal];
 		if (signal_code) {
-			// replicate node's default exit code behavior for signals
-			exit_code = 128 + signal_code;
+			exit_code += signal_code;
 		}
 	}
 
@@ -57,12 +63,15 @@ function unhandled_handler(error) {
 	// It's only safe to do sync cleanup in unhandled error handlers
 	// Since all graceful shutdown logic is async, just terminate
 	logger.fatal({ error }, 'Immediately terminating due to unhandled error');
-	process.exit(1);
+	process.exit(EXIT_CODE_UNCAUGHT_ERROR);
 }
 
 function exit_handler(exit_code) {
-	const level = exit_code === 0 ? 'info' : 'warn';
-	logger[level]({ exit_code }, 'Exiting with code %s', exit_code);
+	if (exit_code > EXIT_CODE_SUCCESS && exit_code < EXIT_CODE_SIGNAL_MINIMUM) {
+		logger.warn({ exit_code }, 'Exiting with code %s', exit_code);
+	} else {
+		logger.info({ exit_code }, 'Exiting with code %s', exit_code);
+	}
 }
 
 process.on('SIGTERM', signal_handler);
