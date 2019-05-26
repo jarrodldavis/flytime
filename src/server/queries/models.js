@@ -16,3 +16,18 @@ export const migrations = defineTable('migrations', {
 	down_sha256: Schema.String,
 	applied: Schema.Date
 });
+
+export const postal_codes = defineTable('postal_codes', {
+	country_code: Schema.String,
+	postal_code: Schema.String,
+	place_name: Schema.String,
+	state_name: Schema.String,
+	state_code: Schema.String,
+	county_name: Schema.String,
+	county_code: Schema.String,
+	community_name: Schema.String,
+	community_code: Schema.String,
+	latitude: Schema.Number,
+	longitude: Schema.Number,
+	accuracy: Schema.Number
+});
