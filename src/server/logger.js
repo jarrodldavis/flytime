@@ -26,8 +26,8 @@ try {
 	process.exit(EXIT_CODE_LOGGER_ERROR);
 }
 
-export function get_logger(name) {
-	return logger.child({ name });
+export function get_logger(name, bindings) {
+	return logger.child({ name, ...bindings });
 }
 
 logger.info('Logger created and ready for use');
