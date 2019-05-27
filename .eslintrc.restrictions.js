@@ -31,7 +31,7 @@ const restrictions = {
 	],
 	pg: [
 		{
-			selector: 'ImportDeclaration .source[value=/^pg/]',
+			selector: 'ImportDeclaration .source[value=/^pg$/]',
 			message: "Unexpected usage of the 'pg' package."
 		}
 	],

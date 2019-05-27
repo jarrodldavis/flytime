@@ -33,7 +33,8 @@ export async function get_zip_entry(zip_url) {
 	logger.debug('Opening entry stream...');
 	const open = promisify(archive.openReadStream).bind(archive);
 	const zip_stream = await open(entry);
-	logger.debug('Successfully opened entry stream');
+	logger.debug('Opened entry stream');
 
+	logger.info('Got ZIP entry, returning stream');
 	return zip_stream;
 }

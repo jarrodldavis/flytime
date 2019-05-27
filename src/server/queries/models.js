@@ -31,3 +31,7 @@ export const postal_codes = defineTable('postal_codes', {
 	longitude: Schema.Number,
 	accuracy: Schema.nullable(Schema.Number)
 });
+
+export const postal_codes_import = defineTable('postal_codes_import', {
+	// this schema intentionally left blank
+});
