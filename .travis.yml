@@ -13,6 +13,7 @@ cache:
     - ~/.cache # for Cypress
 before_script:
   - sudo systemctl start postgresql
+  - sudo systemctl start redis-server
   - psql -c 'create database flytime_ci;' -U postgres
 script:
   - npm run lint
