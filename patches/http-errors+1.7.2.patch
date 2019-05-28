@@ -1,5 +1,5 @@
 diff --git a/node_modules/http-errors/index.js b/node_modules/http-errors/index.js
-index 10ca4ad..1d069f1 100644
+index 10ca4ad..1d5ae4b 100644
 --- a/node_modules/http-errors/index.js
 +++ b/node_modules/http-errors/index.js
 @@ -55,7 +55,7 @@ function createError () {
@@ -11,3 +11,11 @@ index 10ca4ad..1d069f1 100644
        continue
      }
      switch (typeof arg) {
+@@ -70,6 +70,7 @@ function createError () {
+         break
+       case 'object':
+         props = arg
++        status = props.status || props.statusCode || props.code || status
+         break
+     }
+   }
