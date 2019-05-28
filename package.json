@@ -10,7 +10,6 @@
   "scripts": {
     "prepare": "patch-package",
     "dev": "sapper dev --port 3000",
-    "dev:test": "npm run dev --node-options='--require ./mock-redis'",
     "wait": "wait-on http://localhost:3000 --timeout 10000",
     "build": "sapper build --legacy",
     "lint": "run-s lint:* -cns",
@@ -22,7 +21,7 @@
     "start": "node __sapper__/build",
     "cy:run": "cypress run",
     "cy:open": "cypress open",
-    "test": "run-p --race dev:test cy:run"
+    "test": "run-p --race dev cy:run"
   },
   "engines": {
     "node": "^12.1.0",
@@ -63,14 +62,12 @@
     "eslint-plugin-mocha": "^5.3.0",
     "eslint-plugin-svelte3": "^1.2.2",
     "glob-args": "^0.2.1",
-    "mock-require": "^3.0.3",
     "npm-run-all": "^4.1.5",
     "patch-package": "^6.1.2",
     "pino-pretty": "^3.0.0",
     "postguard": "^0.2.0",
     "prettier": "^1.17.1",
     "prettier-plugin-svelte": "^0.5.1",
-    "redis-mock": "^0.44.0",
     "rollup": "^1.12.3",
     "rollup-plugin-babel": "^4.0.2",
     "rollup-plugin-commonjs": "^10.0.0",

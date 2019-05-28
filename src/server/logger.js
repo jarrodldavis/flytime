@@ -32,6 +32,20 @@ export function get_logger(name) {
 
 logger.info('Logger created and ready for use');
 
+export function get_response_log_level(res, error) {
+	const status = (error && error.statusCode ? error : res).statusCode;
+
+	if (status >= 500 && status <= 599) {
+		return 'error';
+	}
+
+	if (status >= 400 && status <= 499) {
+		return 'warn';
+	}
+
+	return 'info';
+}
+
 const client_id_symbol = Symbol('postgres client id');
 export class PostgresLogger {
 	#client_id_size = null;

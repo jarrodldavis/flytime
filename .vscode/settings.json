@@ -43,7 +43,6 @@
 		"**/__sapper__": true
 	},
 	"files.watcherExclude": {
-		"**/.git/**": true,
 		"**/node_modules/**": true,
 		"**/__sapper__/**": true
 	},

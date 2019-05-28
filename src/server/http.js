@@ -8,7 +8,7 @@ import * as sapper from '@sapper/server';
 
 import { is_development, timeout } from '../common';
 import { PORT as port, SHUTDOWN_SERVER_TIMEOUT } from './environment';
-import { get_logger } from './logger';
+import { get_logger, get_response_log_level } from './logger';
 import { register_graceful_shutdown } from './shutdown';
 import { session_middleware, get_client_session_data } from './session';
 import { Request } from './request';
@@ -22,7 +22,7 @@ const app = polka({
 	server: createServer({ IncomingMessage: Request, ServerResponse: Response }),
 	onError: error_handler
 }).use(
-	pino_http({ logger, name: 'http' }),
+	pino_http({ logger, name: 'http', customLogLevel: get_response_log_level }),
 	negotiate_content,
 	json(),
 	urlencoded(),
