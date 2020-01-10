@@ -16,3 +16,22 @@ export const migrations = defineTable('migrations', {
 	down_sha256: Schema.String,
 	applied: Schema.Date
 });
+
+export const postal_codes = defineTable('postal_codes', {
+	country_code: Schema.String,
+	postal_code: Schema.String,
+	place_name: Schema.String,
+	state_name: Schema.nullable(Schema.String),
+	state_code: Schema.nullable(Schema.String),
+	county_name: Schema.nullable(Schema.String),
+	county_code: Schema.nullable(Schema.String),
+	community_name: Schema.nullable(Schema.String),
+	community_code: Schema.nullable(Schema.String),
+	latitude: Schema.Number,
+	longitude: Schema.Number,
+	accuracy: Schema.nullable(Schema.Number)
+});
+
+export const postal_codes_import = defineTable('postal_codes_import', {
+	// this schema intentionally left blank
+});

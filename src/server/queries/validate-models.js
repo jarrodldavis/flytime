@@ -1,8 +1,13 @@
 import assert from 'assert';
 import { getAllTableSchemas, sql, ColumnType } from 'squid/pg';
-import { information_schema_columns } from './models'; // add table definitions
+import { information_schema_columns, postal_codes_import } from './models'; // add table definitions
 import { postgres_pool } from '../external-services';
 import { get_logger } from '../logger';
+
+const TABLES_TO_IGNORE = new Set([
+	information_schema_columns.name,
+	postal_codes_import.name
+]);
 
 const logger = get_logger('postgres:validate');
 
@@ -76,7 +81,7 @@ export async function validate_models() {
 	logger.info('Validating defined model schemas against database tables...');
 
 	const expected_tables = getAllTableSchemas().reduce((tables, table) => {
-		if (table !== information_schema_columns) {
+		if (!TABLES_TO_IGNORE.has(table.name)) {
 			tables[table.name] = table.columns;
 		}
 		return tables;
